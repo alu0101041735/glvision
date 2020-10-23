@@ -5,7 +5,7 @@
 class Helper
 {
 public:
-    helper();
+    Helper();
 };
 
 #endif // HELPER_H
