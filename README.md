@@ -1,7 +1,7 @@
 # GLVision
 ## Proyecto de Visión por Computador, 2020/2021
-###Daniel Paz Marcos
-###David Martín Martín
+### Daniel Paz Marcos
+### David Martín Martín
 
 
 1. Referencias:
