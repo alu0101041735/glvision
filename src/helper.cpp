@@ -1,6 +1,6 @@
 #include "helper.h"
 
-helper::helper()
+Helper::Helper()
 {
 
 }

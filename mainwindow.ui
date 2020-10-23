@@ -25,17 +25,23 @@
    </property>
    <widget class="QMenu" name="menuTest">
     <property name="title">
-     <string>Test</string>
+     <string>File</string>
     </property>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menutest2">
     <property name="title">
-     <string>test2</string>
+     <string>Edit</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
     </property>
    </widget>
    <addaction name="menuTest"/>
    <addaction name="menutest2"/>
+   <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
