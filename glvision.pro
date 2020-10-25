@@ -8,18 +8,20 @@ CONFIG += c++11
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+INCLUDEPATH += include/
+
 SOURCES += \
-    glwidget.cpp \
-    helper.cpp \
-    main.cpp \
-    mainwindow.cpp \
-    widget.cpp
+    src/glwidget.cpp \
+    src/helper.cpp \
+    src/main.cpp \
+    src/mainwindow.cpp \
+    src/widget.cpp
 
 HEADERS += \
-    glwidget.h \
-    helper.h \
-    mainwindow.h \
-    widget.h
+    include/glwidget.h \
+    include/helper.h \
+    include/mainwindow.h \
+    include/widget.h
 
 FORMS += \
     mainwindow.ui
