@@ -4,6 +4,8 @@
 #include <QMainWindow>
 
 #include "helper.h"
+#include "glwidget.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
