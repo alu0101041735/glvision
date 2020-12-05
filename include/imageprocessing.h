@@ -28,6 +28,7 @@ public:
     bool clKernelSetup();
     bool runKernel();
     bool configImage();
+    bool saveImage();
 };
 
 #endif // IMAGEPROCESSING_H

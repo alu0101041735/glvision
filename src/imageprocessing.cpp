@@ -162,7 +162,16 @@ bool Imageprocessing::configImage()
           v++;
        }
    }
+
+   return true;
 }
+
+bool Imageprocessing::saveImage()
+{
+
+    return true;
+}
+
 
 
 
