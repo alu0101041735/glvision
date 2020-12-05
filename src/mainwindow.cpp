@@ -44,7 +44,10 @@ void MainWindow::on_actionOpen_File_triggered()
         images.append(QImage(fileUrl.path()));
     }
 
-    Imageprocessing image(images[0]);
+    clHandler image(images[0]);
+    image.clKernelSetup(TEST);
+    image.runKernel();
+
     /*
     for (auto &url: urls)
     {

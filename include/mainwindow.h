@@ -5,7 +5,7 @@
 #include <QDebug>
 
 #include "helper.h"
-#include "imageprocessing.h"
+#include "clhandler.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

@@ -1,26 +1,17 @@
-#include "imageprocessing.h"
+#include "clhandler.h"
 
-Imageprocessing::Imageprocessing()
+clHandler::clHandler()
 {
     if (!clSetup())
     {
         exit(-1);
     }
 
-    if (!clKernelSetup())
-    {
-       exit(-1);
-    }
-
-    if (!runKernel())
-    {
-        exit(-1);
-    }
 
 }
 
 
-Imageprocessing::Imageprocessing(QImage image): m_qimage(image)
+clHandler::clHandler(QImage image): m_qimage(image)
 {
 
     if (!configImage())
@@ -33,19 +24,14 @@ Imageprocessing::Imageprocessing(QImage image): m_qimage(image)
         exit(-1);
     }
 
-    if (!clKernelSetup())
-    {
-       exit(-1);
-    }
+}
 
-    if (!runKernel())
-    {
-        exit(-1);
-    }
+clHandler::~clHandler()
+{
 
 }
 
-bool Imageprocessing::clSetup()
+bool clHandler::clSetup()
 {
 
     //get all platforms (drivers)
@@ -73,20 +59,62 @@ bool Imageprocessing::clSetup()
     return true;
 }
 
-bool Imageprocessing::clProcessImage()
+bool clHandler::clProcessImage()
 {
-
     return true;
 }
 
-bool Imageprocessing::clKernelSetup()
+bool clHandler::clKernelSetup(TransformationFlags transformation)
 {
+    std::string path;
+    if (!std::filesystem::exists("../glvision/src/kernel/test.cl")) {
+        std::cout << "File does not exist\n";
+        exit(-1);
+    }
+    switch(transformation) {
+        case GAUSSIAN:
+            path = "../glvision/src/kernel/gaussian.cl";
+            if (!std::filesystem::exists(path)) {
+                std::cout << "File does not exist\n";
+                exit(-1);
+            }
+            break;
+        case GRAYSCALE:
+            path = "../glvision/src/kernel/grayscale.cl";
+            if (!std::filesystem::exists(path)) {
+                std::cout << "File does not exist\n";
+                exit(-1);
+            }
+            break;
+        case BLUR:
+            path = "../glvision/src/kernel/blur.cl";
+            if (!std::filesystem::exists(path)) {
+                std::cout << "File does not exist\n";
+                exit(-1);
+            }
+            break;
+        case TEST:
+            path = "../glvision/src/kernel/test.cl";
+            if (!std::filesystem::exists(path)) {
+                std::cout << "File does not exist\n";
+                exit(-1);
+            }
+            break;
+        default:
+            break;
+    }
+
+    std::string kernel_code;
+    std::ifstream f(path);
+
+    if(f) {
+        std::ostringstream ss;
+        ss << f.rdbuf(); // reading data
+        kernel_code = ss.str();
+    }
+    std::cout << "the kernel code is: " << kernel_code << "\n\n\n";
 
     // kernel calculates for each element C=A+B
-    std::string kernel_code=
-        "   void kernel simple_add(global const int* A, global const int* B, global int* C){       "
-        "       C[get_global_id(0)]=A[get_global_id(0)]+B[get_global_id(0)];                 "
-        "   }                                                                               ";
     m_sources.push_back({kernel_code.c_str(),kernel_code.length()});
 
 
@@ -105,7 +133,7 @@ bool Imageprocessing::clKernelSetup()
 
 }
 
-bool Imageprocessing::runKernel()
+bool clHandler::runKernel()
 {
 
     cl::Buffer buffer_A(m_context,CL_MEM_READ_WRITE,sizeof(int)*10);
@@ -141,34 +169,45 @@ bool Imageprocessing::runKernel()
     return true;
 }
 
-bool Imageprocessing::configImage()
+bool clHandler::configImage()
 {
    int width = m_qimage.width();
    int height = m_qimage.height();
 
-   m_image.resize(width * height);
+   m_image = new Rgba[width*height];
 
    int v = 0;
    for (int i = 0 ; i < width; i++) {
        for (int j = 0; j < height; j++) {
           QRgb pixel = m_qimage.pixel(i, j);
 
-          auto pixelcolor = std::make_tuple(
-                      static_cast<uint8_t>(QColor(pixel).red()),
-                      static_cast<uint8_t>(QColor(pixel).green()),
-                      static_cast<uint8_t>(QColor(pixel).red()));
-          m_image[v]	= pixelcolor;
+          Rgba pixelcolor;
+          //pixelcolor.red = static_cast<uint8_t>(QColor(pixel).red());
+          //pixelcolor.green = static_cast<uint8_t>(QColor(pixel).green());
+          //pixelcolor.blue  = static_cast<uint8_t>(QColor(pixel).blue());
 
+          pixelcolor.red = QColor(pixel).red();
+          pixelcolor.green = QColor(pixel).green();
+          pixelcolor.blue  = QColor(pixel).blue();
+
+          m_image[v]	= pixelcolor;
           v++;
        }
    }
 
+   /*
+   for (int i = 0; i < (width*height); i++) {
+       std::cout << "Pixel color: red(" << m_image[i].red
+                    << ") green(" << m_image[i].green
+                    << ") blue(" << m_image[i].blue << ")\n";
+   }
+   */
+
    return true;
 }
 
-bool Imageprocessing::saveImage()
+bool clHandler::saveImage()
 {
-
     return true;
 }
 

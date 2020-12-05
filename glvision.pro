@@ -2,7 +2,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++17
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -13,14 +13,15 @@ CONFIG += c++11
 INCLUDEPATH += include/
 
 SOURCES += \
-    src/imageprocessing.cpp \
+    src/clhandler.cpp \
     src/helper.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
-    src/widget.cpp
+    src/widget.cpp \
+
 
 HEADERS += \
-    include/imageprocessing.h \
+    include/clhandler.h \
     include/helper.h \
     include/mainwindow.h \
     include/widget.h
