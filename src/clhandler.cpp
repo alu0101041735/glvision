@@ -112,11 +112,8 @@ bool clHandler::clKernelSetup(TransformationFlags transformation)
         ss << f.rdbuf(); // reading data
         kernel_code = ss.str();
     }
-    std::cout << "the kernel code is: " << kernel_code << "\n\n\n";
 
-    // kernel calculates for each element C=A+B
     m_sources.push_back({kernel_code.c_str(),kernel_code.length()});
-
 
     new(&m_program) cl::Program(m_context,m_sources);
 
@@ -126,15 +123,14 @@ bool clHandler::clKernelSetup(TransformationFlags transformation)
         exit(1);
     }
 
-
-    // create buffers on the device
     return true;
-
-
 }
 
 bool clHandler::runKernel()
 {
+    cl::Buffer buffer_Image(m_context, CL_MEM_READ_WRITE, sizeof(Rgba)*m_size);
+    cl::CommandQueue queue_Image(m_context, m_default_device);
+    queue_Image.enqueueWriteBuffer(buffer_Image,CL_TRUE,0,sizeof(Rgba)*m_size, m_image);
 
     cl::Buffer buffer_A(m_context,CL_MEM_READ_WRITE,sizeof(int)*10);
     cl::Buffer buffer_B(m_context,CL_MEM_READ_WRITE,sizeof(int)*10);
@@ -151,6 +147,7 @@ bool clHandler::runKernel()
     queue.enqueueWriteBuffer(buffer_B,CL_TRUE,0,sizeof(int)*10,B);
     //run the kernel
     //alternative way to run the kernel
+
     cl::Kernel kernel_add=cl::Kernel(m_program,"simple_add");
     kernel_add.setArg(0,buffer_A);
     kernel_add.setArg(1,buffer_B);
@@ -173,8 +170,9 @@ bool clHandler::configImage()
 {
    int width = m_qimage.width();
    int height = m_qimage.height();
+   m_size = width * height;
 
-   m_image = new Rgba[width*height];
+   m_image = new Rgba[m_size];
 
    int v = 0;
    for (int i = 0 ; i < width; i++) {
@@ -210,7 +208,3 @@ bool clHandler::saveImage()
 {
     return true;
 }
-
-
-
-
