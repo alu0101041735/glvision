@@ -6,11 +6,10 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    //, ui(new Ui::MainWindow)
+    , ui(new Ui::MainWindow)
 {
 
-    Imageprocessing image();
-    //ui->setupUi(this);
+    ui->setupUi(this);
 }
 
 MainWindow::~MainWindow()
@@ -44,6 +43,7 @@ void MainWindow::on_actionOpen_File_triggered()
         images.append(QImage(fileUrl.path()));
     }
 
+    Imageprocessing image;
     /*
     for (auto &url: urls)
     {
