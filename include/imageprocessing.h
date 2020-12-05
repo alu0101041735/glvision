@@ -2,6 +2,8 @@
 #define IMAGEPROCESSING_H
 
 #include <CL/cl2.hpp>
+#include <iostream>
+
 
 class Imageprocessing
 {
