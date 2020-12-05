@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 #include "helper.h"
+#include "imageprocessing.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
