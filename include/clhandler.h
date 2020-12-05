@@ -43,6 +43,7 @@ private:
     } Rgba;
 
     Rgba *m_image;
+    uint64_t m_size;
 
     bool clSetup();
     bool clProcessImage();
