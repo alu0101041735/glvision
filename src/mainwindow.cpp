@@ -39,11 +39,12 @@ void MainWindow::on_actionOpen_File_triggered()
     fileDialog.exec();
     files = fileDialog.selectedUrls();
 
+
     for (auto fileUrl : files) {
         images.append(QImage(fileUrl.path()));
     }
 
-    Imageprocessing image;
+    Imageprocessing image(images[0]);
     /*
     for (auto &url: urls)
     {

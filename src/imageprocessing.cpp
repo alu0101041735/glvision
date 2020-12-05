@@ -20,7 +20,7 @@ Imageprocessing::Imageprocessing()
 }
 
 
-Imageprocessing::Imageprocessing(QImage image): m_image(image)
+Imageprocessing::Imageprocessing(QImage image): m_qimage(image)
 {
 
     if (!configImage())
@@ -140,4 +140,29 @@ bool Imageprocessing::runKernel()
     }
     return true;
 }
+
+bool Imageprocessing::configImage()
+{
+   int width = m_qimage.width();
+   int height = m_qimage.height();
+
+   m_image.resize(width * height);
+
+   int v = 0;
+   for (int i = 0 ; i < width; i++) {
+       for (int j = 0; j < height; j++) {
+          QRgb pixel = m_qimage.pixel(i, j);
+
+          auto pixelcolor = std::make_tuple(
+                      static_cast<uint8_t>(QColor(pixel).red()),
+                      static_cast<uint8_t>(QColor(pixel).green()),
+                      static_cast<uint8_t>(QColor(pixel).red()));
+          m_image[v]	= pixelcolor;
+
+          v++;
+       }
+   }
+}
+
+
 

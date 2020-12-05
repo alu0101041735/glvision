@@ -4,6 +4,7 @@
 #include <CL/cl2.hpp>
 #include <QImage>
 #include <iostream>
+#include <tuple>
 
 
 class Imageprocessing
@@ -15,7 +16,8 @@ private:
     cl::Program m_program;
     cl::Program::Sources m_sources;
 
-    QImage m_image;
+    QImage m_qimage;
+    std::vector<std::tuple<int,int,int>> m_image;
 
 
 public:
