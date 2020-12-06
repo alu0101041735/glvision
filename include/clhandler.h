@@ -45,6 +45,10 @@ private:
     Rgba *m_image;
     uint64_t m_size;
 
+    std::string m_kernelname;
+
+    TransformationFlags m_flag;
+
     bool clSetup();
     bool clProcessImage();
     bool configImage();
