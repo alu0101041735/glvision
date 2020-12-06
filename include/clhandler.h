@@ -23,6 +23,13 @@ inline TransformationFlags operator|(TransformationFlags a, TransformationFlags 
     return static_cast<TransformationFlags>(static_cast<int>(a) | static_cast<int>(b));
 }
 
+typedef  struct Rgba {
+    cl_int red;
+    cl_int green;
+    cl_int blue;
+    cl_int a = 255;
+} __attribute__((aligned(128)))Rgba;
+
 class clHandler
 {
 private:
@@ -33,17 +40,11 @@ private:
     cl::Program::Sources m_sources;
 
     QImage m_qimage;
-    //std::vector<std::tuple<int,int,int>> m_image;
-
-    typedef struct Rgba {
-        int red;
-        int green;
-        int blue;
-        int a = 0;
-    } Rgba;
 
     Rgba *m_image;
-    uint64_t m_size;
+    unsigned long int m_size;
+    int m_width;
+    int m_height;
 
     std::string m_kernelname;
 
@@ -52,7 +53,7 @@ private:
     bool clSetup();
     bool clProcessImage();
     bool configImage();
-    bool saveImage();
+    bool saveImage(Rgba *image);
 public:
     clHandler();
     ~clHandler();

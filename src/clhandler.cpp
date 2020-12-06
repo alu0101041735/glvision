@@ -123,10 +123,9 @@ bool clHandler::clKernelSetup(TransformationFlags transformation)
 
     new(&m_program) cl::Program(m_context,m_sources);
 
-    cl::Program program(m_context,m_sources);
     if(m_program.build({m_default_device})!=CL_SUCCESS){
-        std::cout<<" Error building: "<<program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(m_default_device)<<"\n";
-        exit(1);
+        std::cout<<" Error building: "<<m_program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(m_default_device)<<"\n";
+        exit(-1);
     }
 
     return true;
@@ -163,26 +162,35 @@ bool clHandler::runKernel()
     } else if (m_flag == GRAYSCALE) {
             cl::Buffer buffer_Image(m_context, CL_MEM_READ_WRITE, sizeof(Rgba)*m_size);
             cl::Buffer buffer_Output(m_context, CL_MEM_READ_WRITE, sizeof(Rgba)*m_size);
-
             cl::CommandQueue queue_image(m_context, m_default_device);
 
-            queue_image.enqueueWriteBuffer(buffer_Image,CL_TRUE,0,sizeof(Rgba)*m_size, m_image);
+            std::cout << "Size of the image: " << m_size << "\n";
+            queue_image.enqueueWriteBuffer(buffer_Image,CL_TRUE,0,sizeof(Rgba)*m_size,m_image);
 
             kernel_add.setArg(0,buffer_Image);
-            kernel_add.setArg(0,buffer_Output);
-            queue_image.enqueueNDRangeKernel(kernel_add,cl::NullRange,cl::NDRange(10),cl::NullRange);
+            kernel_add.setArg(1,m_size);
+            kernel_add.setArg(2,buffer_Output);
+            queue_image.enqueueNDRangeKernel(kernel_add,cl::NullRange,cl::NDRange(m_size),cl::NullRange);
             queue_image.finish();
 
-            Rgba C[m_size];
+            Rgba *C = new Rgba[m_size];
             //read result C from the device to array C
-            queue_image.enqueueReadBuffer(buffer_Output,CL_TRUE,0,sizeof(Rgba)*m_size,C);
+            cl_int buffer =  queue_image.enqueueReadBuffer(buffer_Output,CL_TRUE,0,sizeof(Rgba)*m_size,C);
 
-            std::cout<<" result: \n";
+            std::cout << "The color of the pixel is: " <<
+                         C[1000000].red << "," <<
+                         C[1000000].green << "," <<
+                         C[1000000].blue << "\n";
+
+            bool result = saveImage(C);
+
+            /*
             for(uint64_t i=0;i<m_size;i++){
                 std::cout << "Pixel color: red(" << C[i].red
                     << ") green(" << C[i].green
                     << ") blue(" << C[i].blue << ")\n";
             }
+            */
 
     } else if (m_flag == BLUR)  {
             cl::Buffer buffer_Image(m_context, CL_MEM_READ_WRITE, sizeof(Rgba)*m_size);
@@ -190,10 +198,13 @@ bool clHandler::runKernel()
 
             cl::CommandQueue queue_image(m_context, m_default_device);
 
-            queue_image.enqueueWriteBuffer(buffer_Image,CL_TRUE,0,sizeof(Rgba)*m_size, m_image);
+            Rgba imagetest[m_size];
+
+            memcpy(imagetest, m_image, sizeof(Rgba)*m_size);
+            queue_image.enqueueWriteBuffer(buffer_Image,CL_TRUE,0,sizeof(Rgba)*m_size,imagetest);
 
             kernel_add.setArg(0,buffer_Image);
-            kernel_add.setArg(0,buffer_Output);
+            kernel_add.setArg(1,buffer_Output);
             queue_image.enqueueNDRangeKernel(kernel_add,cl::NullRange,cl::NDRange(10),cl::NullRange);
             queue_image.finish();
 
@@ -240,14 +251,7 @@ bool clHandler::runKernel()
 
     }
 
-
-
-    //create queue to which we will push commands for the device.
-
-    //write arrays A and B to the device
-    //run the kernel
-    //alternative way to run the kernel
-
+    return true;
 }
 
 bool clHandler::configImage()
@@ -255,13 +259,15 @@ bool clHandler::configImage()
    int width = m_qimage.width();
    int height = m_qimage.height();
    m_size = width * height;
+   m_width = width;
+   m_height = height;
 
    m_image = new Rgba[m_size];
 
    int v = 0;
-   for (int i = 0 ; i < width; i++) {
-       for (int j = 0; j < height; j++) {
-          QRgb pixel = m_qimage.pixel(i, j);
+   for (int i = 0 ; i < m_height; i++) {
+       for (int j = 0; j < m_width; j++) {
+          QRgb pixel = m_qimage.pixel(j,i);
 
           Rgba pixelcolor;
           //pixelcolor.red = static_cast<uint8_t>(QColor(pixel).red());
@@ -288,7 +294,23 @@ bool clHandler::configImage()
    return true;
 }
 
-bool clHandler::saveImage()
+bool clHandler::saveImage(Rgba *image)
 {
+    QColor color;
+    QImage *result_image = new QImage(m_width, m_height, QImage::Format_RGBA64);
+    uint64_t v = 0;
+
+    for (int i = 0; i <  m_height; i++) {
+        for (int j = 0; j < m_width; j++) {
+            color.setRgb(image[v].red, image[v].green, image[v].blue);
+            result_image->setPixelColor(j,i, color);
+            v++;
+        }
+    }
+
+    result_image->save("../glvision/images/test.png", "PNG");
+
+    exit(0);
+
     return true;
 }

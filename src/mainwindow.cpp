@@ -45,7 +45,7 @@ void MainWindow::on_actionOpen_File_triggered()
     }
 
     clHandler image(images[0]);
-    image.clKernelSetup(TEST);
+    image.clKernelSetup(GRAYSCALE);
     image.runKernel();
 
     /*
