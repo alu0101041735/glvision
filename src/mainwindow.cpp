@@ -2,6 +2,10 @@
 #include "ui_mainwindow.h"
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QGraphicsPixmapItem>
+#include <iostream>
+#include <exception>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -32,8 +36,6 @@ void MainWindow::on_actionOpen_File_triggered()
     fileDialog.setFilter(QDir::Files | QDir::Dirs | QDir::Drives | QDir::NoDotAndDotDot);
     fileDialog.setNameFilter(QString("*.png *.jpg"));
     fileDialog.setDirectoryUrl(urls.first());
-    //urls = fileDialog.getOpenFileUrls();
-    //fileUrl = fileDialog.getOpenFileUrl(this, "Open image");
     fileDialog.exec();
     files = fileDialog.selectedUrls();
 
@@ -41,12 +43,11 @@ void MainWindow::on_actionOpen_File_triggered()
         images.append(QImage(fileUrl.path()));
     }
 
-    /*
-    for (auto &url: urls)
-    {
+    try {
+        this->ui->image->display(images.first());
+    }  catch (std::exception& e) {
+        qDebug() << "test";
     }
-    for (auto &url: urls)
-    {
-    }
-    */
+    //delete this->ui->graphicsView;
+    //this->ui->graphicsView = new imageWidget(images.first(), this);
 }

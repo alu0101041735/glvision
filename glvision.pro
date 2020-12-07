@@ -11,6 +11,7 @@ CONFIG += c++11
 INCLUDEPATH += include/
 
 SOURCES += \
+    src/imagemenu.cpp \
     src/glwidget.cpp \
     src/helper.cpp \
     src/imagewidget.cpp \
@@ -21,9 +22,10 @@ SOURCES += \
 HEADERS += \
     include/glwidget.h \
     include/helper.h \
+    include/imagemenu.h \
     include/mainwindow.h \
     include/widget.h \
-    src/imagewidget.h
+    include/imagewidget.h
 
 FORMS += \
     mainwindow.ui

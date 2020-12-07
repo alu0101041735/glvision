@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QMenu>
 #include <QAction>
+#include "imagemenu.h"
 
 imageWidget::imageWidget(QWidget *parent) : QGraphicsView(parent)
 {
@@ -31,8 +32,18 @@ void imageWidget::display(QImage& image)
 void imageWidget::ShowContextMenu(const QPoint &pos)
 {
     QPoint point = mapToGlobal(pos);
+
+    imageMenu menu(this);
+    menu.exec(point);
+    /*
     QMenu* menu = new QMenu(this);
     menu->addAction("First Action");
     menu->exec(point);
     qDebug() << "Showing menu";
+    */
+}
+
+void imageWidget::toGrayscale(bool)
+{
+    qDebug() << "to grayscale";
 }

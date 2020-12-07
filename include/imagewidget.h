@@ -23,6 +23,7 @@ private:
 
 public slots:
    void ShowContextMenu(const QPoint &);
+   void toGrayscale(bool);
 
 signals:
 
