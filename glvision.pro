@@ -13,6 +13,7 @@ INCLUDEPATH += include/
 SOURCES += \
     src/glwidget.cpp \
     src/helper.cpp \
+    src/imagewidget.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
     src/widget.cpp
@@ -21,7 +22,8 @@ HEADERS += \
     include/glwidget.h \
     include/helper.h \
     include/mainwindow.h \
-    include/widget.h
+    include/widget.h \
+    src/imagewidget.h
 
 FORMS += \
     mainwindow.ui
