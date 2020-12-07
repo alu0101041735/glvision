@@ -17,6 +17,7 @@ SOURCES += \
     src/helper.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
+    src/nativeprocessor.cpp \
     src/widget.cpp \
 
 
@@ -24,7 +25,8 @@ HEADERS += \
     include/clhandler.h \
     include/helper.h \
     include/mainwindow.h \
-    include/widget.h
+    include/widget.h \
+    include/nativeprocessor.h
 
 FORMS += \
     mainwindow.ui

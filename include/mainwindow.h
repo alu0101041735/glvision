@@ -6,6 +6,7 @@
 
 #include "helper.h"
 #include "clhandler.h"
+#include "nativeprocessor.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

@@ -44,11 +44,16 @@ void MainWindow::on_actionOpen_File_triggered()
         images.append(QImage(fileUrl.path()));
     }
 
+    /*
     clHandler image(images[0]);
     image.clKernelSetup(GRAYSCALE);
     image.runKernel();
 
     QImage result = image.getImage();
+    */
+
+    NativeProcessor np;
+    np.processImage(images[0], GAUSSIAN);
 
     /*
     for (auto &url: urls)
