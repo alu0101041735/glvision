@@ -24,7 +24,6 @@ __kernel void kernel grayscale(__global Rgba *A, unsigned long int m_size, __glo
     }
 
     if (get_global_id(0) == 1000000) {
-        printf("Size = %d\n", m_size);
         printf("Original color: %d,%d,%d\nGray color: %d,%d,%d\n",
                A[1000000].red, A[1000000].green, A[1000000].blue,
                 C[1000000].red, C[1000000].green, A[1000000].blue);

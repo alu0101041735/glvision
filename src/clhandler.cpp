@@ -164,19 +164,38 @@ bool clHandler::runKernel()
             cl::Buffer buffer_Output(m_context, CL_MEM_READ_WRITE, sizeof(Rgba)*m_size);
             cl::CommandQueue queue_image(m_context, m_default_device);
 
-            std::cout << "Size of the image: " << m_size << "\n";
             queue_image.enqueueWriteBuffer(buffer_Image,CL_TRUE,0,sizeof(Rgba)*m_size,m_image);
+
+            size_t params;
+            void *paramValue;
+            size_t *param_value_size_ret;
+            cl_kernel_work_group_info test;
 
             kernel_add.setArg(0,buffer_Image);
             kernel_add.setArg(1,m_size);
             kernel_add.setArg(2,buffer_Output);
-            queue_image.enqueueNDRangeKernel(kernel_add,cl::NullRange,cl::NDRange(m_size),cl::NullRange);
-            queue_image.finish();
+            cl::Event waitforkernel;
+            cl_int result_1 = queue_image.enqueueNDRangeKernel(kernel_add,cl::NullRange,cl::NDRange(m_size),cl::NDRange(1), nullptr, &waitforkernel);
+            cl_int result_2 = queue_image.finish();
+            //std::cout << "result 1: " << result_1 << "\n" << "result 2: " << result_2 << "\n";
 
             Rgba *C = new Rgba[m_size];
+            std::vector<cl::Event> events;
+            events.push_back(waitforkernel);
             //read result C from the device to array C
-            cl_int buffer =  queue_image.enqueueReadBuffer(buffer_Output,CL_TRUE,0,sizeof(Rgba)*m_size,C);
-
+            cl_int buffer =  queue_image.enqueueReadBuffer(buffer_Output,CL_TRUE,0,sizeof(Rgba)*m_size,C,&events, nullptr);
+            /*
+            cl_int clEnqueueReadBuffer(
+                cl_command_queue command_queue,
+                cl_mem buffer,
+                cl_bool blocking_read,
+                size_t offset,
+                size_t size,
+                void* ptr,
+                cl_uint num_events_in_wait_list,
+                const cl_event* event_wait_list,
+                cl_event* event);
+                */
             std::cout << "The color of the pixel is: " <<
                          C[1000000].red << "," <<
                          C[1000000].green << "," <<
@@ -196,6 +215,7 @@ bool clHandler::runKernel()
             cl::Buffer buffer_Image(m_context, CL_MEM_READ_WRITE, sizeof(Rgba)*m_size);
             cl::Buffer buffer_Output(m_context, CL_MEM_READ_WRITE, sizeof(Rgba)*m_size);
 
+
             cl::CommandQueue queue_image(m_context, m_default_device);
 
             Rgba imagetest[m_size];
@@ -205,10 +225,12 @@ bool clHandler::runKernel()
 
             kernel_add.setArg(0,buffer_Image);
             kernel_add.setArg(1,buffer_Output);
-            queue_image.enqueueNDRangeKernel(kernel_add,cl::NullRange,cl::NDRange(10),cl::NullRange);
-            queue_image.finish();
+            cl_int kernel_result =  queue_image.enqueueNDRangeKernel(kernel_add,cl::NullRange,cl::NDRange(10),cl::NullRange);
+            cl_int kernel_result_2 = queue_image.finish();
+            std::cout << "Resultado 1: " << kernel_result << "\n" <<
+                         "resultado 2: " << kernel_result_2 <<"\n";
 
-            Rgba C[m_size];
+            Rgba *C = new Rgba[m_size];
             //read result C from the device to array C
             queue_image.enqueueReadBuffer(buffer_Output,CL_TRUE,0,sizeof(Rgba)*m_size,C);
 
@@ -264,7 +286,7 @@ bool clHandler::configImage()
 
    m_image = new Rgba[m_size];
 
-   int v = 0;
+   uint64_t v = 0;
    for (int i = 0 ; i < m_height; i++) {
        for (int j = 0; j < m_width; j++) {
           QRgb pixel = m_qimage.pixel(j,i);
@@ -297,20 +319,26 @@ bool clHandler::configImage()
 bool clHandler::saveImage(Rgba *image)
 {
     QColor color;
-    QImage *result_image = new QImage(m_width, m_height, QImage::Format_RGBA64);
+    //QImage *result_image = new QImage(m_width, m_height, QImage::Format_RGBA64);
+    new(&m_qimageresult) QImage(m_width, m_height, QImage::Format_RGBA64);
     uint64_t v = 0;
 
     for (int i = 0; i <  m_height; i++) {
         for (int j = 0; j < m_width; j++) {
             color.setRgb(image[v].red, image[v].green, image[v].blue);
-            result_image->setPixelColor(j,i, color);
+            m_qimageresult.setPixelColor(j,i, color);
             v++;
         }
     }
 
-    result_image->save("../glvision/images/test.png", "PNG");
+    m_qimageresult.save("../glvision/images/test.png", "PNG");
 
     exit(0);
 
     return true;
+}
+
+QImage clHandler::getImage()
+{
+    return m_qimageresult;
 }

@@ -40,6 +40,7 @@ private:
     cl::Program::Sources m_sources;
 
     QImage m_qimage;
+    QImage m_qimageresult;
 
     Rgba *m_image;
     unsigned long int m_size;
@@ -60,6 +61,7 @@ public:
     clHandler(QImage image);
     bool clKernelSetup(TransformationFlags transformation);
     bool runKernel();
+    QImage getImage();
 };
 
 #endif // IMAGEPROCESSING_H

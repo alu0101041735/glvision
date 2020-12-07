@@ -48,6 +48,8 @@ void MainWindow::on_actionOpen_File_triggered()
     image.clKernelSetup(GRAYSCALE);
     image.runKernel();
 
+    QImage result = image.getImage();
+
     /*
     for (auto &url: urls)
     {
