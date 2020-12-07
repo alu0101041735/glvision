@@ -11,6 +11,7 @@ CONFIG += c++11
 INCLUDEPATH += include/
 
 SOURCES += \
+    imagepanel.cpp \
     src/imagemenu.cpp \
     src/glwidget.cpp \
     src/helper.cpp \
@@ -20,14 +21,17 @@ SOURCES += \
     src/widget.cpp
 
 HEADERS += \
+    imagepanel.h \
     include/glwidget.h \
     include/helper.h \
     include/imagemenu.h \
     include/mainwindow.h \
     include/widget.h \
-    include/imagewidget.h
+    include/imagewidget.h\
+    image
 
 FORMS += \
+    imagePanelForm.ui \
     mainwindow.ui
 
 # Default rules for deployment.
