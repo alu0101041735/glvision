@@ -3,12 +3,10 @@
 
 #include <QMainWindow>
 #include <QDebug>
-
-#include "helper.h"
-
 #include "imagetab.h"
-#include "clhandler.h"
 #include "nativeprocessor.h"
+//#include "helper.h"
+//#include "clhandler.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -27,7 +25,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    Helper helper;
+    //Helper helper;
     QVector<imageTab*> tabs;
 };
 #endif // MAINWINDOW_H
