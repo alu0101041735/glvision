@@ -1,4 +1,4 @@
-QT       += core gui charts
+QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -13,20 +13,34 @@ CONFIG += c++17
 INCLUDEPATH += include/
 
 SOURCES += \
+<<<<<<< HEAD
     src/imagepanel.cpp \
     src/imagetab.cpp \
     src/imagemenu.cpp \
     src/imagewidget.cpp \
+=======
+    include/histogram.cpp \
+    src/glimage.cpp \
+    src/glwidget.cpp \
+    src/helper.cpp \
+>>>>>>> feature/histogram
     src/main.cpp \
     src/mainwindow.cpp \
     src/nativeprocessor.cpp
 
 
 HEADERS += \
+<<<<<<< HEAD
     include/imagepanel.h \
     include/glwidget.h \
     include/imagemenu.h \
     include/imagetab.h \
+=======
+    include/glimage.h \
+    include/glwidget.h \
+    include/helper.h \
+    include/histogram.h \
+>>>>>>> feature/histogram
     include/mainwindow.h \
     include/imagewidget.h \
     include/imagetab.h \
