@@ -3,6 +3,11 @@
 #include "ui_mainwindow.h"
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QGraphicsPixmapItem>
+#include <iostream>
+#include <exception>
+#include <QDebug>
+#include "imagetab.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -34,8 +39,6 @@ void MainWindow::on_actionOpen_File_triggered()
     fileDialog.setFilter(QDir::Files | QDir::Dirs | QDir::Drives | QDir::NoDotAndDotDot);
     fileDialog.setNameFilter(QString("*.png *.jpg"));
     fileDialog.setDirectoryUrl(urls.first());
-    //urls = fileDialog.getOpenFileUrls();
-    //fileUrl = fileDialog.getOpenFileUrl(this, "Open image");
     fileDialog.exec();
     files = fileDialog.selectedUrls();
 
@@ -44,6 +47,10 @@ void MainWindow::on_actionOpen_File_triggered()
         images.append(QImage(fileUrl.path()));
     }
 
+    try {
+        this->ui->image->display(images.first());
+    }  catch (std::exception& e) {
+        qDebug() << "test";
     /*
     clHandler image(images[0]);
     image.clKernelSetup(GRAYSCALE);
@@ -57,11 +64,7 @@ void MainWindow::on_actionOpen_File_triggered()
     np.saveImage();
 
     /*
-    for (auto &url: urls)
-    {
-    }
-    for (auto &url: urls)
-    {
-    }
-    */
+
+    this->ui->tabWidget->currentIndex();
+    tabs.append(new imageTab(this->ui->tab_2));
 }

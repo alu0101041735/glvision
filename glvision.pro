@@ -13,23 +13,38 @@ CONFIG += c++17
 INCLUDEPATH += include/
 
 SOURCES += \
-    src/clhandler.cpp \
-    src/helper.cpp \
+
+    src/imagepanel.cpp \
+    src/imagetab.cpp \
+    src/imagemenu.cpp \
+    # src/clhandler.cpp \
+    # src/helper.cpp \
+    src/imagewidget.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
     src/nativeprocessor.cpp \
-    src/widget.cpp \
+    # src/widget.cpp \
 
 
 HEADERS += \
-    include/clhandler.h \
-    include/helper.h \
+
+    include/imagepanel.h \
+    include/glwidget.h \
+    # include/clhandler.h \
+    # include/helper.h \
+    include/imagemenu.h \
+    include/imagetab.h \
     include/mainwindow.h \
-    include/widget.h \
+    # include/widget.h \
+    include/imagewidget.h
+    # include/image
     include/nativeprocessor.h
 
+
 FORMS += \
-    mainwindow.ui
+    forms/imagePanelForm.ui \
+    forms/imagetab.ui \
+    forms/mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

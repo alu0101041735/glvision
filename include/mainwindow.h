@@ -5,6 +5,8 @@
 #include <QDebug>
 
 #include "helper.h"
+
+#include "imagetab.h"
 #include "clhandler.h"
 #include "nativeprocessor.h"
 
@@ -26,5 +28,6 @@ private slots:
 private:
     Ui::MainWindow *ui;
     Helper helper;
+    QVector<imageTab*> tabs;
 };
 #endif // MAINWINDOW_H
