@@ -31,6 +31,7 @@ public:
     std::vector<uint16_t> getHistogram(QImage image);
     std::vector<uint16_t> getCumulativeHistogram(QImage image);
     std::pair<int, int> valueRange(QImage image);
+    std::pair<QColor, int> grayLevel(QImage image, int x, int y);
 
 };
 

@@ -133,3 +133,15 @@ std::pair<int, int> NativeProcessor::valueRange(QImage image)
     }
     return range;
 }
+
+std::pair<QColor, int> NativeProcessor::grayLevel(QImage image, int x, int y)
+{
+    QImage rimage = processImage(image, 2);
+
+    std::pair<QColor, int> graylevel;
+
+    graylevel.first = image.pixelColor(x, y);
+    graylevel.second =  rimage.pixelColor(x, y).red();
+
+    return graylevel;
+}
