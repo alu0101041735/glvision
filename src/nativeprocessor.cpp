@@ -30,7 +30,7 @@ void  NativeProcessor::toGrayScale()
 
 void NativeProcessor::computeHistogram()
 {
-    new(&m_histogram) std::vector<uint16_t>(255,0);
+    new(&m_histogram) std::vector<uint32_t>(256,0);
 
     if (m_grayimage.isNull())
     {
@@ -55,10 +55,12 @@ void NativeProcessor::computeCumulativeHistogram()
     if (m_histogram.size() == 0) {
         computeHistogram();
     }
-    new(&m_cumulativehistogram) std::vector<uint16_t>(255,0);
+    new(&m_cumulativehistogram) std::vector<uint32_t>(256,0);
 
+    uint32_t sum = 0;;
     for (unsigned long i = 0; i < m_histogram.size(); i++) {
-        m_cumulativehistogram[i] += m_histogram[i];
+        sum += m_histogram[i];
+        m_cumulativehistogram[i] = sum;
     }
 
 }
@@ -84,11 +86,11 @@ void NativeProcessor::computeValueRange()
 
 void NativeProcessor::computeEntropy()
 {
-    int pi = 0;
-    int aux;
+    long double pi = 0;
+    float aux;
 
     for (unsigned long i = 0; i < m_histogram.size(); i++) {
-        aux = (m_histogram[i]/m_histogram.size());
+        aux = (i/m_histogram.size());
         pi += aux*log2(aux);
     }
 
@@ -102,8 +104,7 @@ void NativeProcessor::computeBrightness()
 
     int sum = 0;
     for (unsigned long i = 0; i < m_histogram.size(); i++) {
-
-        for (int j = 0; j < m_histogram[i]; j++) {
+        for (unsigned long int j = 0; j < m_histogram[i]; j++) {
             sum += i;
         }
     }
@@ -117,21 +118,19 @@ void NativeProcessor::computeContrast()
     if (m_histogram.size() == 0)
         computeHistogram();
 
-    if (!m_brightness) {
-        computeBrightness();
-    }
+    uint64_t sum = 0;
 
-    int sum = 0;
 
     for (unsigned long i = 0; i < m_histogram.size(); i++) {
 
-        for (int j = 0; j < m_histogram[i]; j++) {
-            int aux = i - m_brightness;
-            sum += (aux*aux);
+        for (unsigned long int j = 0; j < m_histogram[i]; j++) {
+            long double aux = abs(pow(i - m_brightness, 2));
+            sum += aux;
         }
     }
 
     m_contrast = sqrt(sum / (m_width*m_height));
+    std::cout << "CONTRASTE: " << sum << " " << m_contrast << "\n\n\n\n\n";
 
 }
 
@@ -219,12 +218,12 @@ QImage NativeProcessor::getResultImage()
     return m_rimage;
 }
 
-std::vector<uint16_t> NativeProcessor::getHistogram()
+std::vector<uint32_t> NativeProcessor::getHistogram()
 {
     return m_histogram;
 }
 
-std::vector<uint16_t> NativeProcessor::getCumulativeHistogram()
+std::vector<uint32_t> NativeProcessor::getCumulativeHistogram()
 {
     return m_cumulativehistogram;
 }
@@ -262,7 +261,7 @@ int NativeProcessor::contrast()
 QImage NativeProcessor::processStretch(std::pair<int, int> *table)
 {
 
-    std::pair<int, int> fullstretch[255];
+    std::pair<int, int> fullstretch[256];
 
     int size = sizeof(&table)/sizeof(std::pair<int, int>);
 

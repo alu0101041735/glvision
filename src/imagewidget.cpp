@@ -65,7 +65,7 @@ void imageWidget::mouseReleaseEvent(QMouseEvent *eventRelease)
 
 void imageWidget::mouseMoveEvent(QMouseEvent *eventMove)
 {
-    qDebug() << eventMove->pos();
+    //qDebug() << eventMove->pos();
     QPoint* mousePos = new QPoint(eventMove->pos());
     emit mouseMoved(mousePos);
 }
