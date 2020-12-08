@@ -3,7 +3,6 @@
 #include <iostream>
 #include <QDebug>
 #include <QApplication>
-#include <CL/cl2.hpp>
 
 int main(int argc, char *argv[])
 {

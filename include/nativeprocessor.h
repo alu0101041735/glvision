@@ -12,6 +12,22 @@
 #include <set>
 #include <math.h>
 
+
+enum TransformationFlags
+{
+    GAUSSIAN  = 1,
+    GRAYSCALE = 2,
+    BLUR   = 4,
+    TEST = 8
+};
+
+
+inline TransformationFlags operator|(TransformationFlags a, TransformationFlags b)
+{
+    return static_cast<TransformationFlags>(static_cast<int>(a) | static_cast<int>(b));
+}
+
+
 class NativeProcessor
 {
 private:
