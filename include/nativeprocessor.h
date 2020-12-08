@@ -11,6 +11,7 @@
 #include <utility>
 #include <set>
 #include <math.h>
+#include <tgmath.h>
 
 
 enum TransformationFlags
@@ -46,14 +47,18 @@ private:
     int m_brightness;
     int m_contrast;
 
+    int m_entropy;
+
     void toGrayScale();
     void toGaussian();
 
     void computeHistogram();
     void computeCumulativeHistogram();
     void computeValueRange();
+    void computeEntropy();
     void computeBrightness();
     void computeContrast();
+    std::pair<int, int> *computeFullStretch(std::pair<int, int> start, std::pair<int, int> end, std::pair<int, int> range);
 
 public:
     NativeProcessor(QImage image);
@@ -62,12 +67,16 @@ public:
     int getWidth();
     int getHeight();
     QImage getGrayScale();
+    QImage getResultImage();
     std::vector<uint16_t> getHistogram();
     std::vector<uint16_t> getCumulativeHistogram();
     std::pair<int, int> valueRange();
+    int getEntropy();
     std::pair<QColor, int> grayLevel(int x, int y);
     int brightness();
     int contrast();
+
+    QImage processStretch(std::pair<int, int> *table);
 
 };
 
