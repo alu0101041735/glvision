@@ -16,27 +16,24 @@ SOURCES += \
     src/imagepanel.cpp \
     src/imagetab.cpp \
     src/imagemenu.cpp \
-    # src/clhandler.cpp \
-    # src/helper.cpp \
     src/imagewidget.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
     src/nativeprocessor.cpp
-    # src/widget.cpp \
 
 
 HEADERS += \
     include/imagepanel.h \
     include/glwidget.h \
-    # include/clhandler.h \
-    # include/helper.h \
     include/imagemenu.h \
     include/imagetab.h \
     include/mainwindow.h \
-    # include/widget.h \
     include/imagewidget.h \
-    # include/image
-    include/nativeprocessor.h
+    include/imagetab.h \
+    include/nativeprocessor.h \
+    include/ui_imagetab.h \
+    include/ui_imagepanelform.h \
+    include/ui_mainwindow.h
 
 
 FORMS += \

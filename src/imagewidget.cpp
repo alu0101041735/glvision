@@ -6,7 +6,8 @@
 
 imageWidget::imageWidget(QWidget *parent) : QGraphicsView(parent)
 {
-    scene = new QGraphicsScene;
+    scene = new QGraphicsScene(this);
+    this->setScene(scene);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint &)),this, SLOT(ShowContextMenu(const QPoint &)));
     setMouseTracking(true);
@@ -14,20 +15,24 @@ imageWidget::imageWidget(QWidget *parent) : QGraphicsView(parent)
 
 imageWidget::imageWidget(QImage image, QWidget *parent) : QGraphicsView(parent)
 {
-    scene = new QGraphicsScene;
+    scene = new QGraphicsScene(this);
+    this->setScene(scene);
     display(image);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
+    setMouseTracking(true);
+}
+
+void imageWidget::resizeEvent(QResizeEvent *event) {
+    QGraphicsView::resizeEvent(event);
+    fitInView(sceneRect(), Qt::KeepAspectRatio);
 }
 
 void imageWidget::display(QImage& image)
 {
-    this->image = image;
-    imagePixItem = new QGraphicsPixmapItem(QPixmap::fromImage(image));
-    scene->addItem(imagePixItem);
+    QGraphicsPixmapItem* item = new QGraphicsPixmapItem(QPixmap::fromImage(image));
+    scene->addItem(item);
 
-    this->setScene(scene);
-    this->show();
-    this->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
+    show();
 }
 
 void imageWidget::ShowContextMenu(const QPoint &pos)
@@ -66,6 +71,20 @@ void imageWidget::mouseReleaseEvent(QMouseEvent *eventRelease)
 void imageWidget::mouseMoveEvent(QMouseEvent *eventMove)
 {
     qDebug() << eventMove->pos();
-    QPoint* mousePos = new QPoint(eventMove->pos());
-    emit mouseMoved(mousePos);
+    QPoint mousePos = eventMove->pos();
+    auto item = this->items().first();
+    auto itemPos = item->pos();
+    auto rect = item->sceneBoundingRect().toRect();
+    qreal px = itemPos.rx();
+    qreal py = itemPos.ry();
+    rect = rect.adjusted(px, py, px, py);
+    if (rect.contains(mousePos))
+    {
+        mousePos += itemPos.toPoint();
+        qDebug() << mousePos;
+        qDebug() << this->pos();
+        emit mouseMoved(mousePos);
+    }
+
+
 }

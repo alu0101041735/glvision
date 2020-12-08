@@ -29,8 +29,9 @@ public slots:
    void mouseReleaseEvent(QMouseEvent* eventRelease);
    void mouseMoveEvent(QMouseEvent* eventMove);
 
+   void resizeEvent(QResizeEvent *event);
 signals:
-   void mouseMoved(QPoint* pos);
+   void mouseMoved(QPoint& pos);
 
 
 };

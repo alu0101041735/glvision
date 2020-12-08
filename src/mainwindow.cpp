@@ -48,10 +48,19 @@ void MainWindow::on_actionOpen_File_triggered()
     }
 
     try {
-        this->ui->image->display(images.first());
+   //     this->ui->image->display(images.first());
     }  catch (std::exception& e) {
         qDebug() << "test";
     }
+
+    ui->tabWidget->addTab(new imageTab(images.first(), ui->tabWidget), urls.first().toString());
+    auto index = ui->tabWidget->currentIndex();
+
+    //this->ui->tabWidget->insertTab(this);
+    //tabs.append()
+    //this->ui->tabWidget->currentIndex();
+    //tabs.append(new imageTab(this->ui->tab_2));
+
     /*
     clHandler image(images[0]);
     image.clKernelSetup(GRAYSCALE);
@@ -64,7 +73,4 @@ void MainWindow::on_actionOpen_File_triggered()
     np.saveImage();
 
     */
-
-    this->ui->tabWidget->currentIndex();
-    tabs.append(new imageTab(this->ui->tab_2));
 }

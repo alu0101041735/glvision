@@ -18,31 +18,8 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>-1</number>
       </property>
-      <widget class="QWidget" name="tab">
-       <attribute name="title">
-        <string>Tab 1</string>
-       </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="imageWidget" name="image"/>
-        </item>
-        <item alignment="Qt::AlignHCenter">
-         <widget class="imagePanel" name="widget" native="true"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_2">
-       <attribute name="title">
-        <string>Tab 2</string>
-       </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="imageTab" name="widget_2" native="true"/>
-        </item>
-       </layout>
-      </widget>
      </widget>
     </item>
    </layout>
@@ -95,25 +72,6 @@
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>imageWidget</class>
-   <extends>QGraphicsView</extends>
-   <header>imagewidget.h</header>
-  </customwidget>
-  <customwidget>
-   <class>imagePanel</class>
-   <extends>QWidget</extends>
-   <header>imagepanel.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>imageTab</class>
-   <extends>QWidget</extends>
-   <header>imagetab.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
