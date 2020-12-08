@@ -1,19 +1,17 @@
 #include "nativeprocessor.h"
 
-bool NativeProcessor::toGrayScale()
+void  NativeProcessor::toGrayScale()
 {
-    int width = m_image.width();
-    int height = m_image.height();
     QColor color;
     int red;
     int green;
     int blue;
     int result_color;
 
-    new(&m_grayimage) QImage(width, height, QImage::Format_RGBA64);
+    new(&m_grayimage) QImage(m_width, m_height, QImage::Format_RGBA64);
 
-   for (int i = 0; i < height; i++){
-       for (int j = 0; j < width; j++) {
+   for (int i = 0; i < m_height; i++){
+       for (int j = 0; j < m_width; j++) {
            red = m_image.pixelColor(j, i).red();
            green = m_image.pixelColor(j, i).green();
            blue = m_image.pixelColor(j, i).blue();
@@ -28,7 +26,6 @@ bool NativeProcessor::toGrayScale()
        }
    }
 
-   return true;
 }
 
 void NativeProcessor::computeHistogram()
@@ -44,7 +41,7 @@ void NativeProcessor::computeHistogram()
 
     for (int y = 0; y < m_height; y++) {
         for (int x = 0; x < m_width; x++) {
-            gray_level = m_rimage.pixelColor(x, y).red();
+            gray_level = m_grayimage.pixelColor(x, y).red();
 
             m_histogram[gray_level] += 1;
         }
@@ -131,15 +128,12 @@ NativeProcessor::NativeProcessor(QImage image): m_image(image)
     m_width = image.width();
     m_height = image.height();
 
-    bool result = toGrayScale();
+    toGrayScale();
     computeHistogram();
     computeCumulativeHistogram();
     computeValueRange();
-    computeGrayLevel();
     computeBrightness();
     computeContrast();
-
-
 }
 
 QImage NativeProcessor::processImage(int transformation)
@@ -152,25 +146,24 @@ QImage NativeProcessor::processImage(int transformation)
 
         break;
     case 2:
-        if (!toGrayScale())
-            exit(-1);
+        toGrayScale();
         break;
     case 4:
         break;
     case 8:
         break;
+    default:
+        m_rimage = m_grayimage;
+        break;
 
     }
-
-
-    m_rimage.save("../glvision/images/test_cpu.png", "PNG");
-
-    exit(0);
     return m_rimage;
 }
 
-void NativeProcessor::setImage()
+void NativeProcessor::saveImage()
 {
+    m_rimage.save("../glvision/images/test.png", "PNG");
+    exit(0);
 
 }
 

@@ -30,8 +30,8 @@ private:
     int m_brightness;
     int m_contrast;
 
-    bool toGrayScale();
-    bool toGaussian();
+    void toGrayScale();
+    void toGaussian();
 
     void computeHistogram();
     void computeCumulativeHistogram();
@@ -42,7 +42,7 @@ private:
 public:
     NativeProcessor(QImage image);
     QImage processImage( int transformation);
-    void setImage();
+    void saveImage();
     int getWidth();
     int getHeight();
     std::vector<uint16_t> getHistogram();

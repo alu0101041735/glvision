@@ -52,8 +52,9 @@ void MainWindow::on_actionOpen_File_triggered()
     QImage result = image.getImage();
     */
 
-    NativeProcessor np;
-    np.processImage(images[0], GAUSSIAN);
+    NativeProcessor np(images[0 ]);
+    QImage test = np.processImage(0);
+    np.saveImage();
 
     /*
     for (auto &url: urls)
