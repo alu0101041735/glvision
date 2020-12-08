@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include <QFileDialog>
 #include <QStandardPaths>
+#include "glimage.h"
+#include <QtCharts>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -41,6 +43,19 @@ void MainWindow::on_actionOpen_File_triggered()
         images.append(QImage(fileUrl.path()));
     }
 
+    QVector<unsigned int> histogram = GlVision::GLImage(images.first()).histogram();
+    QBarSet* barSet = new QBarSet("histogram");
+    for (auto value : histogram) {
+        *barSet << value;
+    }
+    QBarSeries* series = new QBarSeries();
+    series->append(barSet);
+    QChart* chart = new QChart();
+    chart->addSeries(series);
+    chart->setTitle("Histogram");
+    QChartView* view = new QChartView(chart);
+    view->setRenderHint(QPainter::Antialiasing);
+    this->setCentralWidget(view);
     /*
     for (auto &url: urls)
     {
