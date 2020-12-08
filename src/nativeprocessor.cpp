@@ -82,6 +82,19 @@ void NativeProcessor::computeValueRange()
 
 }
 
+void NativeProcessor::computeEntropy()
+{
+    int pi = 0;
+    int aux;
+
+    for (unsigned long i = 0; i < m_histogram.size(); i++) {
+        aux = (m_histogram[i]/m_histogram.size());
+        pi += aux*log2(aux);
+    }
+
+    m_entropy = -pi;
+}
+
 void NativeProcessor::computeBrightness()
 {
     if (m_histogram.size() == 0)
@@ -194,6 +207,11 @@ std::vector<uint16_t> NativeProcessor::getCumulativeHistogram()
 std::pair<int, int> NativeProcessor::valueRange()
 {
     return m_valuerange;
+}
+
+int NativeProcessor::getEntropy()
+{
+    return m_entropy;
 }
 
 std::pair<QColor, int> NativeProcessor::grayLevel(int x, int y)

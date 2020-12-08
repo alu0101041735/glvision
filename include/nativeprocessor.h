@@ -11,6 +11,7 @@
 #include <utility>
 #include <set>
 #include <math.h>
+#include <tgmath.h>
 
 class NativeProcessor
 {
@@ -30,12 +31,15 @@ private:
     int m_brightness;
     int m_contrast;
 
+    int m_entropy;
+
     void toGrayScale();
     void toGaussian();
 
     void computeHistogram();
     void computeCumulativeHistogram();
     void computeValueRange();
+    void computeEntropy();
     void computeBrightness();
     void computeContrast();
 
@@ -49,6 +53,7 @@ public:
     std::vector<uint16_t> getHistogram();
     std::vector<uint16_t> getCumulativeHistogram();
     std::pair<int, int> valueRange();
+    int getEntropy();
     std::pair<QColor, int> grayLevel(int x, int y);
     int brightness();
     int contrast();
