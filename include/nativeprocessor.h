@@ -29,7 +29,8 @@ public:
     int getWidth(QImage image);
     int getHeight(QImage image);
     std::vector<uint16_t> getHistogram(QImage image);
-    std::vector<uint16_t> getAcumulativeHistogram(QImage image);
+    std::vector<uint16_t> getCumulativeHistogram(QImage image);
+    std::pair<int, int> valueRange(QImage image);
 
 };
 

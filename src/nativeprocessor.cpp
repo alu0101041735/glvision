@@ -111,3 +111,25 @@ std::vector<uint16_t> NativeProcessor::getCumulativeHistogram(QImage image)
     return cumulative_histogram;
 
 }
+
+std::pair<int, int> NativeProcessor::valueRange(QImage image)
+{
+    QImage rimage = processImage(image, 2);
+    std::pair<int, int> range;
+
+    range.first = rimage.pixelColor(0,0).red();
+    range.second = rimage.pixelColor(0,0).red();
+
+    int height = image.height();
+    int width = image.width();
+
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            if (rimage.pixelColor(x, y).red() < range.first)
+               range.first = rimage.pixelColor(x,y).red();
+            if (rimage.pixelColor(x, y).red() > range.second)
+               range.second = rimage.pixelColor(x,y).red();
+        }
+    }
+    return range;
+}
