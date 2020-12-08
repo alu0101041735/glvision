@@ -7,7 +7,9 @@
 #include <fstream>
 #include <sstream>
 #include <QDebug>
-
+#include <unordered_map>
+#include <utility>
+#include <set>
 
 
 class NativeProcessor
@@ -22,6 +24,13 @@ private:
 public:
     NativeProcessor();
     QImage processImage(QImage image, int transformation);
+    QImage processImage(int transformation);
+    void setImage(QImage image);
+    int getWidth(QImage image);
+    int getHeight(QImage image);
+    std::vector<uint16_t> getHistogram(QImage image);
+    std::vector<uint16_t> getAcumulativeHistogram(QImage image);
+
 };
 
 #endif // NATIVEPROCESSOR_H

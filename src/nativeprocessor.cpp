@@ -62,5 +62,52 @@ QImage NativeProcessor::processImage(QImage image, int transformation)
     m_rimage.save("../glvision/images/test_cpu.png", "PNG");
 
     exit(0);
-   return m_rimage;
+    return m_rimage;
+}
+
+int NativeProcessor::getWidth(QImage image)
+{
+    return image.width();
+}
+
+int NativeProcessor::getHeight(QImage image)
+{
+    return image.height();
+}
+
+std::vector<uint16_t> NativeProcessor::getHistogram(QImage image)
+{
+    int width = image.width();
+    int height = image.height();
+    std::vector<uint16_t> histogram(255, 0);
+
+    QImage rimage = processImage(image, 2);
+    int gray_level;
+
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            gray_level = rimage.pixelColor(x, y).red();
+
+            histogram[gray_level] += 1;
+        }
+    }
+
+    return histogram;
+}
+
+std::vector<uint16_t> NativeProcessor::getCumulativeHistogram(QImage image)
+{
+    int width = image.width();
+    int height = image.height();
+    std::vector<uint16_t> histogram= getHistogram(image);
+
+
+    std::vector<uint16_t> cumulative_histogram(255, 0);
+
+    for (unsigned long i = 0; i < histogram.size(); i++) {
+        cumulative_histogram[i] += histogram[i];
+    }
+
+    return cumulative_histogram;
+
 }
