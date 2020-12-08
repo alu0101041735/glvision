@@ -163,7 +163,6 @@ QImage NativeProcessor::processImage(int transformation)
 void NativeProcessor::saveImage()
 {
     m_rimage.save("../glvision/images/test.png", "PNG");
-    exit(0);
 
 }
 
@@ -175,6 +174,11 @@ int NativeProcessor::getWidth()
 int NativeProcessor::getHeight()
 {
     return m_height;
+}
+
+QImage NativeProcessor::getGrayScale()
+{
+    return m_grayimage;
 }
 
 std::vector<uint16_t> NativeProcessor::getHistogram()

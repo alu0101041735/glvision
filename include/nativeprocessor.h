@@ -45,6 +45,7 @@ public:
     void saveImage();
     int getWidth();
     int getHeight();
+    QImage getGrayScale();
     std::vector<uint16_t> getHistogram();
     std::vector<uint16_t> getCumulativeHistogram();
     std::pair<int, int> valueRange();
