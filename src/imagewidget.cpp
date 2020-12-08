@@ -86,5 +86,4 @@ void imageWidget::mouseMoveEvent(QMouseEvent *eventMove)
         emit mouseMoved(mousePos);
     }
 
-
 }
