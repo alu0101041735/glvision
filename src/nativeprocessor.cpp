@@ -135,11 +135,31 @@ void NativeProcessor::computeContrast()
 
 }
 
+std::pair<int, int> *NativeProcessor::computeFullStretch(std::pair<int, int> start, std::pair<int, int> end, std::pair<int, int> range)
+{
+
+    float slope = (end.second - start.second)/(end.first - start.first);
+    float b = start.second - slope*start.first;
+
+    std::pair<int, int> *result = new std::pair<int, int>(range.first - range.second, 0);
+
+    int v = 0;
+    for (int i = range.first; i < range.second; i++) {
+       result[v].first = i;
+       result[v].second =  slope*i + b;
+       v++;
+    }
+
+    return result;
+}
+
 NativeProcessor::NativeProcessor(QImage image): m_image(image)
 {
 
     m_width = image.width();
     m_height = image.height();
+
+    new(&m_rimage) QImage(m_width, m_height, QImage::Format_RGBA64);
 
     toGrayScale();
     computeHistogram();
@@ -194,6 +214,11 @@ QImage NativeProcessor::getGrayScale()
     return m_grayimage;
 }
 
+QImage NativeProcessor::getResultImage()
+{
+    return m_rimage;
+}
+
 std::vector<uint16_t> NativeProcessor::getHistogram()
 {
     return m_histogram;
@@ -232,4 +257,50 @@ int NativeProcessor::brightness()
 int NativeProcessor::contrast()
 {
     return m_contrast;
+}
+
+QImage NativeProcessor::processStretch(std::pair<int, int> *table)
+{
+
+    std::pair<int, int> fullstretch[255];
+
+    int size = sizeof(&table)/sizeof(std::pair<int, int>);
+
+    for (int i = 1; i < size; i++) {
+        std::pair<int, int> start = table[i-1];
+        std::pair<int, int> end = table[i];
+
+        std::pair<int, int> size;
+        size.first = start.first;
+        size.second = end.first;
+
+        std::pair<int, int> *aux = computeFullStretch(start, end, size);
+
+        int aux_size =  sizeof(&aux)/sizeof(std::pair<int, int>);
+
+        //std::copy(aux, aux+aux_size, fullstretch[start.first]);
+        int w = 0;
+        for (int i = start.first; i < end.first; i++) {
+            fullstretch[i].first = aux[w].first;
+            fullstretch[i].second = aux[w].second;
+            w++;
+        }
+    }
+
+    size = sizeof(fullstretch)/sizeof(std::pair<int, int>);
+
+    QColor updater;
+
+    for (int y = 0; y < m_height; y++) {
+        for (int x = 0; x < m_width; x++) {
+            int color = m_grayimage.pixelColor(x, y).red();
+
+            updater.setRgb(fullstretch[color].second,
+                           fullstretch[color].second,
+                           fullstretch[color].second);
+
+            m_rimage.setPixelColor(x, y, updater);
+        }
+    }
+    return m_rimage;
 }

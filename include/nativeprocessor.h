@@ -58,6 +58,7 @@ private:
     void computeEntropy();
     void computeBrightness();
     void computeContrast();
+    std::pair<int, int> *computeFullStretch(std::pair<int, int> start, std::pair<int, int> end, std::pair<int, int> range);
 
 public:
     NativeProcessor(QImage image);
@@ -66,6 +67,7 @@ public:
     int getWidth();
     int getHeight();
     QImage getGrayScale();
+    QImage getResultImage();
     std::vector<uint16_t> getHistogram();
     std::vector<uint16_t> getCumulativeHistogram();
     std::pair<int, int> valueRange();
@@ -73,6 +75,8 @@ public:
     std::pair<QColor, int> grayLevel(int x, int y);
     int brightness();
     int contrast();
+
+    QImage processStretch(std::pair<int, int> *table);
 
 };
 
