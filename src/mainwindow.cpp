@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+
 #include "ui_mainwindow.h"
 #include <QFileDialog>
 #include <QStandardPaths>
@@ -12,12 +13,13 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+
     ui->setupUi(this);
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    //delete ui;
 }
 
 
@@ -40,6 +42,7 @@ void MainWindow::on_actionOpen_File_triggered()
     fileDialog.exec();
     files = fileDialog.selectedUrls();
 
+
     for (auto fileUrl : files) {
         images.append(QImage(fileUrl.path()));
     }
@@ -48,7 +51,19 @@ void MainWindow::on_actionOpen_File_triggered()
         this->ui->image->display(images.first());
     }  catch (std::exception& e) {
         qDebug() << "test";
-    }
+    /*
+    clHandler image(images[0]);
+    image.clKernelSetup(GRAYSCALE);
+    image.runKernel();
+
+    QImage result = image.getImage();
+    */
+
+    NativeProcessor np(images[0 ]);
+    QImage test = np.processImage(0);
+    np.saveImage();
+
+    /*
 
     this->ui->tabWidget->currentIndex();
     tabs.append(new imageTab(this->ui->tab_2));

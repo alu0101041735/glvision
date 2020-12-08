@@ -8,29 +8,38 @@ CONFIG += c++17
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+ LIBS += -L "$$PWD/libs/" -lOpenCL
+
 INCLUDEPATH += include/
 
 SOURCES += \
+
     src/imagepanel.cpp \
     src/imagetab.cpp \
     src/imagemenu.cpp \
-    src/glwidget.cpp \
-    src/helper.cpp \
+    # src/clhandler.cpp \
+    # src/helper.cpp \
     src/imagewidget.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
-    src/widget.cpp
+    src/nativeprocessor.cpp \
+    # src/widget.cpp \
+
 
 HEADERS += \
+
     include/imagepanel.h \
     include/glwidget.h \
-    include/helper.h \
+    # include/clhandler.h \
+    # include/helper.h \
     include/imagemenu.h \
     include/imagetab.h \
     include/mainwindow.h \
-    include/widget.h \
+    # include/widget.h \
     include/imagewidget.h
-    #include/image
+    # include/image
+    include/nativeprocessor.h
+
 
 FORMS += \
     forms/imagePanelForm.ui \
