@@ -6,6 +6,7 @@
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
 #include <QPoint>
+#include <QMouseEvent>
 
 class imageWidget : public QGraphicsView
 {
@@ -24,8 +25,12 @@ private:
 public slots:
    void ShowContextMenu(const QPoint &);
    void toGrayscale(bool);
+   void mousePressEvent(QMouseEvent* eventPress);
+   void mouseReleaseEvent(QMouseEvent* eventRelease);
+   void mouseMoveEvent(QMouseEvent* eventMove);
 
 signals:
+   void mouseMoved(QPoint* pos);
 
 
 };

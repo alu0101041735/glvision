@@ -25,6 +25,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QLineEdit" name="mousePos">
+     <property name="text">
+      <string>Mouse pos</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QGraphicsView" name="graphicsView">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -35,7 +42,7 @@
      <property name="minimumSize">
       <size>
        <width>100</width>
-       <height>0</height>
+       <height>100</height>
       </size>
      </property>
     </widget>

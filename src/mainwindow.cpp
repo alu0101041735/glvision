@@ -6,6 +6,7 @@
 #include <iostream>
 #include <exception>
 #include <QDebug>
+#include "imagetab.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -48,6 +49,7 @@ void MainWindow::on_actionOpen_File_triggered()
     }  catch (std::exception& e) {
         qDebug() << "test";
     }
-    //delete this->ui->graphicsView;
-    //this->ui->graphicsView = new imageWidget(images.first(), this);
+
+    this->ui->tabWidget->currentIndex();
+    tabs.append(new imageTab(this->ui->tab_2));
 }

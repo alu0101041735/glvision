@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
@@ -37,6 +37,11 @@
        <attribute name="title">
         <string>Tab 2</string>
        </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="imageTab" name="widget_2" native="true"/>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -59,14 +64,14 @@
     <addaction name="actionOpen_File"/>
     <addaction name="actionSave_image"/>
    </widget>
-   <widget class="QMenu" name="menutest2">
-    <property name="title">
-     <string>Edit</string>
-    </property>
-   </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
      <string>View</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menutest2">
+    <property name="title">
+     <string>Edit</string>
     </property>
    </widget>
    <addaction name="menuTest"/>
@@ -100,6 +105,12 @@
    <class>imagePanel</class>
    <extends>QWidget</extends>
    <header>imagepanel.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>imageTab</class>
+   <extends>QWidget</extends>
+   <header>imagetab.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

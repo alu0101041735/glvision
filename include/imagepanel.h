@@ -3,8 +3,9 @@
 
 #include <QObject>
 #include <QWidget>
-#include "ui_imagePanel.h"
+#include "ui_imagePanelForm.h"
 #include <QGraphicsScene>
+#include <QPoint>
 
 class imagePanel : public QWidget
 {
@@ -12,11 +13,14 @@ class imagePanel : public QWidget
 public:
     imagePanel(QWidget* parent = nullptr);
 private:
-    Ui::Form ui;
+    Ui::Form* ui;
     QGraphicsScene scene;
 
 public:
     void setHistrogram(QImage);
+
+public slots:
+    void updateMousePos(QPoint* pos);
 };
 
 #endif // IMAGEPANEL_H

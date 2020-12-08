@@ -9,6 +9,7 @@ imageWidget::imageWidget(QWidget *parent) : QGraphicsView(parent)
     scene = new QGraphicsScene;
     this->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint &)),this, SLOT(ShowContextMenu(const QPoint &)));
+    setMouseTracking(true);
 }
 
 imageWidget::imageWidget(QImage image, QWidget *parent) : QGraphicsView(parent)
@@ -46,4 +47,25 @@ void imageWidget::ShowContextMenu(const QPoint &pos)
 void imageWidget::toGrayscale(bool)
 {
     qDebug() << "to grayscale";
+}
+
+void imageWidget::mousePressEvent(QMouseEvent *eventPress)
+{
+    if (eventPress->button() == Qt::LeftButton)
+    {
+        qDebug() << tr("Left mouse press event");
+        qDebug() << eventPress->pos();
+    }
+}
+
+void imageWidget::mouseReleaseEvent(QMouseEvent *eventRelease)
+{
+
+}
+
+void imageWidget::mouseMoveEvent(QMouseEvent *eventMove)
+{
+    qDebug() << eventMove->pos();
+    QPoint* mousePos = new QPoint(eventMove->pos());
+    emit mouseMoved(mousePos);
 }

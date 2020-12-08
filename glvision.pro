@@ -2,7 +2,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++17
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -11,7 +11,8 @@ CONFIG += c++11
 INCLUDEPATH += include/
 
 SOURCES += \
-    imagepanel.cpp \
+    src/imagepanel.cpp \
+    src/imagetab.cpp \
     src/imagemenu.cpp \
     src/glwidget.cpp \
     src/helper.cpp \
@@ -21,18 +22,20 @@ SOURCES += \
     src/widget.cpp
 
 HEADERS += \
-    imagepanel.h \
+    include/imagepanel.h \
     include/glwidget.h \
     include/helper.h \
     include/imagemenu.h \
+    include/imagetab.h \
     include/mainwindow.h \
     include/widget.h \
-    include/imagewidget.h\
-    image
+    include/imagewidget.h
+    #include/image
 
 FORMS += \
-    imagePanelForm.ui \
-    mainwindow.ui
+    forms/imagePanelForm.ui \
+    forms/imagetab.ui \
+    forms/mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
