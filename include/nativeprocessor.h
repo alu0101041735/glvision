@@ -39,15 +39,15 @@ private:
     int m_width;
     int m_height;
 
-    std::vector<uint16_t> m_histogram;
-    std::vector<uint16_t> m_cumulativehistogram;
+    std::vector<uint32_t> m_histogram;
+    std::vector<uint32_t> m_cumulativehistogram;
 
     std::pair<int, int> m_valuerange;
 
     int m_brightness;
     int m_contrast;
 
-    int m_entropy;
+    long int m_entropy;
 
     void toGrayScale();
     void toGaussian();
@@ -68,8 +68,8 @@ public:
     int getHeight();
     QImage getGrayScale();
     QImage getResultImage();
-    std::vector<uint16_t> getHistogram();
-    std::vector<uint16_t> getCumulativeHistogram();
+    std::vector<uint32_t> getHistogram();
+    std::vector<uint32_t> getCumulativeHistogram();
     std::pair<int, int> valueRange();
     int getEntropy();
     std::pair<QColor, int> grayLevel(int x, int y);

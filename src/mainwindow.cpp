@@ -10,6 +10,34 @@
 #include "imagetab.h"
 #include <QtCharts>
 
+
+
+void test_all(QImage image)
+{
+    NativeProcessor np(image);
+
+    std::cout << "Image width: " << np.getWidth();
+    std::cout << "\nImage height: " << np.getHeight();
+    std::vector<uint32_t> histogram = np.getHistogram();
+
+    std::cout << "\n\nHistogram: ";
+    for (int i = 0; i < histogram.size(); i++) {
+        std::cout << " " << histogram[i];
+    }
+    std::cout << "\n";
+
+    histogram = np.getCumulativeHistogram();
+    std::cout << "Cumulative Histogram: ";
+    for (int i = 0; i < histogram.size(); i++) {
+        std::cout << " " << histogram[i];
+    }
+
+    std::cout << "\n\nValue Range: " << np.valueRange().first << " " << np.valueRange().second;
+    std::cout << "\n\nBrightness: " << np.brightness();
+    std::cout << "\n\nContrast: " << np.contrast();
+    std::cout << "\n\nEntropy: " << np.getEntropy();
+}
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -89,4 +117,8 @@ void MainWindow::on_actionOpen_File_triggered()
     np.saveImage();
 
     */
+
 }
+
+
+
