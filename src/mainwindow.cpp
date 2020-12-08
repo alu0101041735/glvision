@@ -92,7 +92,7 @@ void MainWindow::on_actionOpen_File_triggered()
 
     //Histogrem branch
     
-    QVector<unsigned int> histogram = NativeProcessor(images.first()).histogram();
+    std::vector<uint32_t> histogram = NativeProcessor(images.first()).getHistogram();
     QBarSet* barSet = new QBarSet("histogram");
     for (auto value : histogram) {
         *barSet << value;
