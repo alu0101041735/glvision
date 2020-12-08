@@ -303,3 +303,23 @@ QImage NativeProcessor::processStretch(std::pair<int, int> *table)
     }
     return m_rimage;
 }
+
+QImage NativeProcessor::imageDifference(QImage image)
+{
+    NativeProcessor second(image);
+
+    if ((m_width != second.getWidth()) || (m_height != second.getHeight())) {
+       std::cout << "Fuc u!\n";
+    }
+    else {
+        QColor colordiff;
+        for (int y = 0; y < m_height; y++) {
+            for (int x = 0; x < m_width; x++) {
+                int diff = abs(second.grayLevel(x,y).second - m_grayimage.pixelColor(x,y).red());
+                colordiff.setRgb(diff, diff, diff);
+                m_rimage.setPixelColor(x, y, colordiff);
+            }
+        }
+    }
+    return m_rimage;
+}

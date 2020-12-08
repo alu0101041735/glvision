@@ -77,6 +77,7 @@ public:
     int contrast();
 
     QImage processStretch(std::pair<int, int> *table);
+    QImage imageDifference(QImage image);
 
 };
 
