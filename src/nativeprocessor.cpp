@@ -26,6 +26,7 @@ void  NativeProcessor::toGrayScale()
        }
    }
 
+   m_grayimage.save("../glvision/images/testttttt.png");
 }
 
 void NativeProcessor::computeHistogram()
@@ -322,4 +323,53 @@ QImage NativeProcessor::imageDifference(QImage image)
         }
     }
     return m_rimage;
+}
+
+void NativeProcessor::modifyBrightness(float br)
+{
+        QColor brightness;
+        int gray;
+        int newbrightness;
+        for (int y = 0; y < m_height; y++) {
+            for (int x = 0; x < m_width; x++) {
+                gray = m_grayimage.pixelColor(x, y).red();
+                newbrightness = gray * br;
+
+                if (newbrightness > 255)
+                    newbrightness = 255;
+                if (newbrightness < 0)
+                    newbrightness = 0;
+
+                brightness.setRgb(newbrightness, newbrightness, newbrightness);
+
+                m_rimage.setPixelColor(x, y, brightness);
+            }
+        }
+        updateImageInfo();
+}
+
+void NativeProcessor::modifyContrast(float c)
+{
+    int gray;
+    float fcf = (259*(m_contrast + 255))/(255*(259 - m_contrast));
+    float newcontrast;
+    QColor newcolor;
+
+        for (int y = 0; y < m_height; y++) {
+            for (int x = 0; x < m_width; x++) {
+                gray = m_grayimage.pixelColor(x, y).red();
+
+                newcontrast = fcf * (gray -128) + 128;
+
+                if (newcontrast > 255)
+                    newcontrast = 255;
+                if (newcontrast < 0)
+                    newcontrast = 0;
+
+                newcolor.setRgb(newcontrast, newcontrast, newcontrast);
+
+                m_rimage.setPixelColor(x, y, newcolor);
+            }
+        }
+
 }

@@ -78,6 +78,10 @@ public:
 
     QImage processStretch(std::pair<int, int> *table);
     QImage imageDifference(QImage image);
+    void modifyBrightness(float br);
+    void modifyContrast(float c);
+
+    void updateImageInfo(); //TODO
 
 };
 
