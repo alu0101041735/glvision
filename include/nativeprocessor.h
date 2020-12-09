@@ -47,7 +47,7 @@ private:
     int m_brightness;
     int m_contrast;
 
-    long int m_entropy;
+    float m_entropy;
 
     void toGrayScale();
     void toGaussian();
@@ -72,7 +72,7 @@ public:
     std::vector<uint32_t> getHistogram();
     std::vector<uint32_t> getCumulativeHistogram();
     std::pair<int, int> valueRange();
-    int getEntropy();
+    float getEntropy();
     std::pair<QColor, int> grayLevel(int x, int y);
     int brightness();
     int contrast();

@@ -86,14 +86,20 @@ void NativeProcessor::computeValueRange()
 
 void NativeProcessor::computeEntropy()
 {
-    long double pi = 0;
-    float aux;
+    float pi = 0.0;
+    float normalized_histogram = 0.0;
 
     for (unsigned long i = 0; i < m_histogram.size(); i++) {
-        aux = (i/m_histogram.size());
-        pi += aux*log2(aux);
+        if (m_histogram[i] != 0) {
+            normalized_histogram = m_histogram[i];
+            normalized_histogram /= (m_width*m_height);
+            pi += normalized_histogram*log2(normalized_histogram);
+            std::cout << i << " " << m_histogram[i] << " " << normalized_histogram << " " << pi << "\n";
+        }
+
     }
 
+    std::cout << "Entropy: " << -pi << "\n";
     m_entropy = -pi;
 }
 
@@ -162,6 +168,7 @@ NativeProcessor::NativeProcessor(QImage image): m_image(image)
     toGrayScale();
     computeHistogram();
     computeCumulativeHistogram();
+    computeEntropy();
     computeValueRange();
     computeBrightness();
     computeContrast();
@@ -238,7 +245,7 @@ std::pair<int, int> NativeProcessor::valueRange()
     return m_valuerange;
 }
 
-int NativeProcessor::getEntropy()
+float NativeProcessor::getEntropy()
 {
     return m_entropy;
 }
