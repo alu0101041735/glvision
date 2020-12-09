@@ -82,8 +82,13 @@ void MainWindow::on_actionOpen_File_triggered()
         qDebug() << "test";
     }
 
-    ui->tabWidget->addTab(new imageTab(images.first(), ui->tabWidget), urls.first().toString());
+    createTab(images.first(), urls.first().fileName());
+    /*
+    imageTab* newTab = new imageTab(images.first(), ui->tabWidget);
+    ui->tabWidget->addTab( newTab, urls.first().toString());
+    newTab->connectImageReturn(this);
     auto index = ui->tabWidget->currentIndex();
+    */
 
     //this->ui->tabWidget->insertTab(this);
     //tabs.append()
@@ -92,19 +97,8 @@ void MainWindow::on_actionOpen_File_triggered()
 
     //Histogrem branch
     
-    std::vector<uint32_t> histogram = NativeProcessor(images.first()).getHistogram();
-    QBarSet* barSet = new QBarSet("histogram");
-    for (auto value : histogram) {
-        *barSet << value;
-    }
-    QBarSeries* series = new QBarSeries();
-    series->append(barSet);
-    QChart* chart = new QChart();
-    chart->addSeries(series);
-    chart->setTitle("Histogram");
-    QChartView* view = new QChartView(chart);
-    view->setRenderHint(QPainter::Antialiasing);
-    this->setCentralWidget(view);
+
+
     /*
     clHandler image(images[0]);
     image.clKernelSetup(GRAYSCALE);
@@ -117,6 +111,20 @@ void MainWindow::on_actionOpen_File_triggered()
     np.saveImage();
 
     */
+
+}
+
+void MainWindow::receieveImage(QImage &image)
+{
+   createTab(image, tr("prueba"));
+}
+
+void MainWindow::createTab(QImage &image, QString title)
+{
+    imageTab* newTab = new imageTab(image, ui->tabWidget);
+    ui->tabWidget->addTab( newTab, title);
+    newTab->connectImageReturn(this);
+    //auto index = ui->tabWidget->currentIndex();
 
 }
 
