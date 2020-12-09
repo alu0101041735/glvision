@@ -17,7 +17,7 @@ private:
     QGraphicsScene scene;
 
 public:
-    void setHistrogram(QImage);
+    void setHistrogram(QImage& image);
 
 public slots:
     void updateMousePos(QPoint& pos);

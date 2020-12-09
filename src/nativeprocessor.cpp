@@ -179,6 +179,7 @@ QImage NativeProcessor::processImage(int transformation)
         break;
     case 2:
         toGrayScale();
+        return m_grayimage;
         break;
     case 4:
         break;

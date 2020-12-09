@@ -3,6 +3,7 @@
 #include <QMenu>
 #include <QAction>
 #include "imagemenu.h"
+#include "nativeprocessor.h"
 
 imageWidget::imageWidget(QWidget *parent) : QGraphicsView(parent)
 {
@@ -15,6 +16,7 @@ imageWidget::imageWidget(QWidget *parent) : QGraphicsView(parent)
 
 imageWidget::imageWidget(QImage image, QWidget *parent) : QGraphicsView(parent)
 {
+    this->image = image;
     scene = new QGraphicsScene(this);
     this->setScene(scene);
     display(image);
@@ -29,6 +31,7 @@ void imageWidget::resizeEvent(QResizeEvent *event) {
 
 void imageWidget::display(QImage& image)
 {
+    this->image = image;
     QGraphicsPixmapItem* item = new QGraphicsPixmapItem(QPixmap::fromImage(image));
     scene->addItem(item);
 
@@ -41,17 +44,15 @@ void imageWidget::ShowContextMenu(const QPoint &pos)
 
     imageMenu menu(this);
     menu.exec(point);
-    /*
-    QMenu* menu = new QMenu(this);
-    menu->addAction("First Action");
-    menu->exec(point);
-    qDebug() << "Showing menu";
-    */
 }
 
 void imageWidget::toGrayscale(bool)
 {
     qDebug() << "to grayscale";
+    QImage grayImage = NativeProcessor(this->image).processImage(GRAYSCALE);
+    grayImage.save("gray.png");
+    emit newImage(grayImage);
+
 }
 
 void imageWidget::mousePressEvent(QMouseEvent *eventPress)

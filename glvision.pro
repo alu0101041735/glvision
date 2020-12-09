@@ -13,6 +13,7 @@ CONFIG += c++17
 INCLUDEPATH += include/
 
 SOURCES += \
+    src/imageinfo.cpp \
     src/imagepanel.cpp \
     src/imagetab.cpp \
     src/imagemenu.cpp \
@@ -23,6 +24,7 @@ SOURCES += \
 
 
 HEADERS += \
+    include/imageinfo.h \
     include/imagepanel.h \
     include/glwidget.h \
     include/imagemenu.h \
@@ -30,10 +32,10 @@ HEADERS += \
     include/mainwindow.h \
     include/imagewidget.h \
     include/imagetab.h \
-    include/nativeprocessor.h \
-    include/ui_imagetab.h \
-    include/ui_imagepanelform.h \
-    include/ui_mainwindow.h
+    include/nativeprocessor.h
+    #include/ui_imagetab.h \
+    #include/ui_imagepanelform.h \
+    #include/ui_mainwindow.h
 
 
 FORMS += \

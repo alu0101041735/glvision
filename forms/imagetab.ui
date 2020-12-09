@@ -27,14 +27,14 @@
    <item>
     <widget class="imagePanel" name="panel" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="minimumSize">
       <size>
-       <width>100</width>
+       <width>300</width>
        <height>0</height>
       </size>
      </property>
