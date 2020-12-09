@@ -81,6 +81,7 @@ public:
     QImage imageDifference(QImage image);
     QImage modifyBrightness(float br);
     QImage modifyContrast(int c);
+    QImage gammaCorrection(float gamma);
 
     void updateImageInfo();
 
