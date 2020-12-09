@@ -22,12 +22,12 @@ public:
 private slots:
     void on_actionOpen_File_triggered();
 public slots:
-    void receieveImage(QImage &image);
+    void receieveImage(QImage &image, QString& format);
 
 private:
     Ui::MainWindow *ui;
     //Helper helper;
     QMap<uint, imageTab*> tabs;
-    void createTab(QImage& image, QString title);
+    void createTab(QImage& image, QString format, QString title);
 };
 #endif // MAINWINDOW_H

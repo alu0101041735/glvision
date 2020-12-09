@@ -10,10 +10,7 @@ imagePanel::imagePanel(QWidget* parent): QWidget(parent), ui(new Ui::Form)
 void imagePanel::updateInfo(imageInfo &info)
 {
     this->info = info;
-   // switch(info.getFormat())
-    //{
-   //     case :
-  //  }
+    this->ui->fileType->setText(info.getFormat());
     this->ui->sizeH->setText(QString::number(info.getDimensions().first));
     this->ui->sizeW->setText(QString::number(info.getDimensions().second));
     this->ui->brightness->setText(
@@ -34,7 +31,7 @@ void imagePanel::setHistrogram(QImage& image)
     QBarSet* barSet = new QBarSet("histogram");
     for (auto value : histogram) {
         *barSet << value;
-        qDebug() << value;
+        //qDebug() << value;
     }
 
     QPen pen(Qt::black, 5);

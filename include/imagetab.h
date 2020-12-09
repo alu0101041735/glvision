@@ -14,7 +14,7 @@ class imageTab : public QWidget
 
 public:
     explicit imageTab(QWidget *parent = nullptr);
-    explicit imageTab(QImage& image, QWidget *parent = nullptr);
+    explicit imageTab(QImage& image, QString& format, QWidget *parent = nullptr);
     ~imageTab();
 
     void connectImageReturn();

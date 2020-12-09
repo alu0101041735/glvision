@@ -5,7 +5,7 @@ imageInfo::imageInfo()
 
 }
 
-imageInfo::imageInfo(QImage::Format type, pair dim, pair range, unsigned br, unsigned cont, unsigned ent) :
+imageInfo::imageInfo(QString type, pair dim, pair range, unsigned br, unsigned cont, unsigned ent) :
     fileType(type),
     dimensions(dim),
     range(range),
