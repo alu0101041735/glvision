@@ -130,7 +130,6 @@ void NativeProcessor::computeContrast()
     }
 
     m_contrast = sqrt(sum / (m_width*m_height));
-    std::cout << "CONTRASTE: " << sum << " " << m_contrast << "\n\n\n\n\n";
 
 }
 
