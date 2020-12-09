@@ -26,7 +26,6 @@ void  NativeProcessor::toGrayScale()
        }
    }
 
-   m_grayimage.save("../glvision/images/testttttt.png");
 }
 
 void NativeProcessor::computeHistogram()
@@ -219,6 +218,11 @@ QImage NativeProcessor::getResultImage()
     return m_rimage;
 }
 
+QImage NativeProcessor::getOriginalImage()
+{
+    return m_image;
+}
+
 std::vector<uint32_t> NativeProcessor::getHistogram()
 {
     return m_histogram;
@@ -325,51 +329,111 @@ QImage NativeProcessor::imageDifference(QImage image)
     return m_rimage;
 }
 
-void NativeProcessor::modifyBrightness(float br)
+QImage NativeProcessor::modifyBrightness(float br)
 {
-        QColor brightness;
-        int gray;
-        int newbrightness;
-        for (int y = 0; y < m_height; y++) {
-            for (int x = 0; x < m_width; x++) {
-                gray = m_grayimage.pixelColor(x, y).red();
-                newbrightness = gray * br;
+    if (br < 0)
+        br = -br;
+    QColor newcolor;
 
-                if (newbrightness > 255)
-                    newbrightness = 255;
-                if (newbrightness < 0)
-                    newbrightness = 0;
+    int red;
+    int green;
+    int blue;
 
-                brightness.setRgb(newbrightness, newbrightness, newbrightness);
+    int new_red;
+    int new_green;
+    int new_blue;
 
-                m_rimage.setPixelColor(x, y, brightness);
-            }
+    for (int y = 0; y < m_height; y++) {
+        for (int x = 0; x < m_width; x++) {
+            red = m_image.pixelColor(x, y).red();
+            green = m_image.pixelColor(x, y).green();
+            blue = m_image.pixelColor(x, y).blue();
+
+            new_red = red * br;
+            new_green = green * br;
+            new_blue = blue * br;
+
+            new_red = new_red < 0 ? 0 : new_red;
+            new_red = new_red > 255 ? 255 : new_red;
+
+            new_green = new_green < 0 ? 0 : new_green;
+            new_green = new_green > 255 ? 255 : new_green;
+
+            new_blue = new_blue < 0 ? 0 : new_blue;
+            new_blue = new_blue > 255 ? 255 : new_blue;
+
+            newcolor.setRgb(new_red, new_green, new_blue);
+
+            m_rimage.setPixelColor(x, y, newcolor);
         }
-        updateImageInfo();
+    }
+    return m_rimage;
 }
 
-void NativeProcessor::modifyContrast(float c)
+QImage NativeProcessor::modifyContrast(int c)
 {
-    int gray;
-    float fcf = (259*(m_contrast + 255))/(255*(259 - m_contrast));
-    float newcontrast;
+    if ( c > 255)
+        c = 255;
+    if (c < -255)
+        c = -255;
+    int red;
+    int green;
+    int blue;
+    int new_red;
+    int new_green;
+    int new_blue;
+    float fcf = (259*(c + 255))/(255*(259 - c));
+
     QColor newcolor;
 
         for (int y = 0; y < m_height; y++) {
             for (int x = 0; x < m_width; x++) {
-                gray = m_grayimage.pixelColor(x, y).red();
+                red = m_image.pixelColor(x, y).red();
+                green = m_image.pixelColor(x, y).green();
+                blue = m_image.pixelColor(x, y).blue();
 
-                newcontrast = fcf * (gray -128) + 128;
+                new_red = (fcf * (red - 128)) + 128;
+                new_green = (fcf * (green - 128)) + 128;
+                new_blue = (fcf * (blue - 128)) + 128;
 
-                if (newcontrast > 255)
-                    newcontrast = 255;
-                if (newcontrast < 0)
-                    newcontrast = 0;
+                new_red = new_red < 0 ? 0 : new_red;
+                new_red = new_red > 255 ? 255 : new_red;
 
-                newcolor.setRgb(newcontrast, newcontrast, newcontrast);
+                new_green = new_green < 0 ? 0 : new_green;
+                new_green = new_green > 255 ? 255 : new_green;
+
+                new_blue = new_blue < 0 ? 0 : new_blue;
+                new_blue = new_blue > 255 ? 255 : new_blue;
+
+                newcolor.setRgb(new_red, new_green, new_blue);
 
                 m_rimage.setPixelColor(x, y, newcolor);
             }
         }
+        return m_rimage;
+}
 
+void NativeProcessor::updateImageInfo()
+{
+    computeHistogram();
+    computeCumulativeHistogram();
+    computeValueRange();
+    computeEntropy();
+    computeBrightness();
+    computeContrast();
+}
+
+void NativeProcessor::setResultImageasGray()
+{
+    m_grayimage = NativeProcessor(m_rimage).getGrayScale();
+}
+
+void NativeProcessor::setGrayImageasOriginal()
+{
+    m_image = NativeProcessor(m_grayimage).getOriginalImage();
+}
+
+void NativeProcessor::setResultImageasOriginal()
+{
+    m_image = NativeProcessor(m_rimage).getOriginalImage();
 }
