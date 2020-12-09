@@ -7,6 +7,27 @@ imagePanel::imagePanel(QWidget* parent): QWidget(parent), ui(new Ui::Form)
     ui->setupUi(this);
 }
 
+void imagePanel::updateInfo(imageInfo &info)
+{
+    this->info = info;
+   // switch(info.getFormat())
+    //{
+   //     case :
+  //  }
+    this->ui->sizeH->setText(QString::number(info.getDimensions().first));
+    this->ui->sizeW->setText(QString::number(info.getDimensions().second));
+    this->ui->brightness->setText(
+                QString::number(info.getBrightness())
+                );
+    this->ui->contrast->setText(
+                QString::number(info.getContrast())
+                );
+    this->ui->entropy->setText(
+                QString::number(info.getEntropy())
+                );
+
+}
+
 void imagePanel::setHistrogram(QImage& image)
 {
     std::vector<uint32_t> histogram = NativeProcessor(image).getHistogram();

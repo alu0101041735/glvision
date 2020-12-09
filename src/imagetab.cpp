@@ -1,6 +1,7 @@
 #include "imagetab.h"
 #include "ui_imagetab.h"
 #include "mainwindow.h"
+#include "imageinfo.h"
 
 imageTab::imageTab(QWidget *parent) :
     QWidget(parent),
@@ -13,9 +14,19 @@ imageTab::imageTab(QImage &image, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::imageTab)
 {
+    NativeProcessor imagePr(image);
+    pair dimensions(imagePr.getHeight(), imagePr.getWidth());
+    imageInfo info(image.format(),
+                   dimensions,
+                   pair(0, 0),
+                   imagePr.brightness(),
+                   imagePr.contrast(),
+                   imagePr.getEntropy()
+                );
     ui->setupUi(this);
     ui->image->display(image);
     ui->panel->setHistrogram(image);
+    ui->panel->updateInfo(info);
     connect(ui->image, &imageWidget::mouseMoved, ui->panel, &imagePanel::updateMousePos);
 }
 

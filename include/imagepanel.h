@@ -3,10 +3,11 @@
 
 #include <QObject>
 #include <QWidget>
-#include "ui_imagePanelForm.h"
 #include <QGraphicsScene>
 #include <QPoint>
 
+#include "ui_imagePanelForm.h"
+#include "imageinfo.h"
 class imagePanel : public QWidget
 {
     Q_OBJECT
@@ -15,8 +16,10 @@ public:
 private:
     Ui::Form* ui;
     QGraphicsScene scene;
+    imageInfo info;
 
 public:
+    void updateInfo(imageInfo& info);
     void setHistrogram(QImage& image);
 
 public slots:
