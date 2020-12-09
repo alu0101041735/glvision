@@ -37,15 +37,16 @@ void test_all(QImage image)
     std::cout << "\n\nContrast: " << np.contrast();
     std::cout << "\n\nEntropy: " << np.getEntropy();
 
-    np.modifyContrast(100);
     QImage original = np.getGrayScale();
-    QImage result = np.getResultImage();
+    QImage result = np.modifyContrast(100);
     original.save("../glvision/images/original.png");
     result.save("../glvision/images/result_brightness.png");
 
-    np.modifyBrightness(1.2);
-    result = np.getResultImage();
+    result = np.modifyBrightness(1.2);
     result.save("../glvision/images/result_contrast.png");
+
+     result = np.gammaCorrection(0.5);
+     result.save("../glvision/images/gammacorrection.png");
 }
 
 MainWindow::MainWindow(QWidget *parent)
@@ -117,6 +118,8 @@ void MainWindow::on_actionOpen_File_triggered()
     QImage result = image.getImage();
 
     */
+
+    NativeProcessor np(images[0]);
 
 }
 

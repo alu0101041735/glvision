@@ -280,7 +280,7 @@ QImage NativeProcessor::processStretch(std::pair<int, int> *table)
 
         std::pair<int, int> *aux = computeFullStretch(start, end, size);
 
-        int aux_size =  sizeof(&aux)/sizeof(std::pair<int, int>);
+        //int aux_size =  sizeof(&aux)/sizeof(std::pair<int, int>);
 
         //std::copy(aux, aux+aux_size, fullstretch[start.first]);
         int w = 0;
@@ -411,6 +411,29 @@ QImage NativeProcessor::modifyContrast(int c)
             }
         }
         return m_rimage;
+}
+
+QImage NativeProcessor::gammaCorrection(float gamma)
+{
+    float gray;
+    float normalized_value;
+    float b;
+
+    QColor result;
+
+    for (int y = 0; y < m_height; y++) {
+        for (int x  = 0; x < m_width; x++) {
+            gray = m_grayimage.pixelColor(x,y).red();
+            normalized_value = gray/255;
+            b = pow(normalized_value, gamma);
+
+            result.setRgb(b*255, b*255, b*255);
+
+            m_rimage.setPixelColor(x, y, result);
+        }
+    }
+
+    return m_rimage;
 }
 
 void NativeProcessor::updateImageInfo()
