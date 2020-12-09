@@ -68,6 +68,7 @@ public:
     int getHeight();
     QImage getGrayScale();
     QImage getResultImage();
+    QImage getOriginalImage();
     std::vector<uint32_t> getHistogram();
     std::vector<uint32_t> getCumulativeHistogram();
     std::pair<int, int> valueRange();
@@ -78,6 +79,14 @@ public:
 
     QImage processStretch(std::pair<int, int> *table);
     QImage imageDifference(QImage image);
+    QImage modifyBrightness(float br);
+    QImage modifyContrast(int c);
+
+    void updateImageInfo();
+
+    void setResultImageasGray();
+    void setGrayImageasOriginal();
+    void setResultImageasOriginal();
 
 };
 
