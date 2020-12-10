@@ -10,11 +10,11 @@ void  NativeProcessor::toGrayScale()
 
     new(&m_grayimage) QImage(m_width, m_height, QImage::Format_RGBA64);
 
-   for (int i = 0; i < m_height; i++){
-       for (int j = 0; j < m_width; j++) {
-           red = m_image.pixelColor(j, i).red();
-           green = m_image.pixelColor(j, i).green();
-           blue = m_image.pixelColor(j, i).blue();
+   for (int y = 0; y < m_height; y++){
+       for (int x = 0; x < m_width; x++) {
+           red = m_image.pixelColor(x, y).red();
+           green = m_image.pixelColor(x, y).green();
+           blue = m_image.pixelColor(x, y).blue();
 
            result_color = (red + green + blue) / 3;
 
@@ -22,7 +22,7 @@ void  NativeProcessor::toGrayScale()
            color.setGreen(result_color);
            color.setBlue(result_color);
 
-           m_grayimage.setPixelColor(j, i, color);
+           m_grayimage.setPixelColor(x, y, color);
        }
    }
 

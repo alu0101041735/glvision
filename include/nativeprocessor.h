@@ -12,6 +12,8 @@
 #include <set>
 #include <math.h>
 #include <tgmath.h>
+#include <time.h>
+#include <stdlib.h>
 
 
 enum TransformationFlags
