@@ -46,7 +46,7 @@ public slots:
    void resizeEvent(QResizeEvent *event);
 
 signals:
-   void mouseMoved(QPoint& pos);
+   void mouseMoved(QPoint& pos, int value);
    void newImage(QImage& image, QString& format);
 
 

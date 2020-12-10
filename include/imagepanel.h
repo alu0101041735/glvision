@@ -23,7 +23,7 @@ public:
     void setHistrogram(QImage& image);
 
 public slots:
-    void updateMousePos(QPoint& pos);
+    void updateMousePos(QPoint& pos, int value);
 };
 
 #endif // IMAGEPANEL_H
