@@ -79,6 +79,7 @@ public:
     QImage getOriginalImage();
     std::vector<uint32_t> getHistogram();
     std::vector<uint32_t> getCumulativeHistogram();
+    std::vector<double> getNormalizedHistogram();
     std::pair<int, int> valueRange();
     float getEntropy();
     std::pair<QColor, int> grayLevel(int x, int y);

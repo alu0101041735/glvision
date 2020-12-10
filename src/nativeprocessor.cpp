@@ -276,6 +276,11 @@ std::vector<uint32_t> NativeProcessor::getCumulativeHistogram()
     return m_cumulativehistogram;
 }
 
+std::vector<double> NativeProcessor::getNormalizedHistogram()
+{
+    return m_normalizedhistogram;
+}
+
 std::pair<int, int> NativeProcessor::valueRange()
 {
     return m_valuerange;
