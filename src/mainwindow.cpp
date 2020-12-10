@@ -122,9 +122,7 @@ void MainWindow::on_actionOpen_File_triggered()
 
     */
 
-    NativeProcessor np(images[0]);
-    QImage result = np.gammaCorrection(0.5);
-    result.save("../glvision/images/result_gamma.jpg");
+    //NativeProcessor np(images[0]);
 
 
 }
