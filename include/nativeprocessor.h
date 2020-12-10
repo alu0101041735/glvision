@@ -38,6 +38,8 @@ private:
     QImage m_grayimage;
     QImage m_rimage;
 
+    bool m_isgrayscale;
+
     int m_width;
     int m_height;
 
@@ -64,6 +66,7 @@ private:
 
 public:
     NativeProcessor(QImage image);
+    NativeProcessor(QImage image, bool grayscale);
     QImage processImage( int transformation);
     void saveImage();
     int getWidth();

@@ -174,6 +174,27 @@ NativeProcessor::NativeProcessor(QImage image): m_image(image)
     computeContrast();
 }
 
+NativeProcessor::NativeProcessor(QImage image, bool grayscale)
+{
+    m_width = image.width();
+    m_height = image.height();
+
+    new(&m_rimage) QImage(m_width, m_height, QImage::Format_RGBA64);
+
+    if (grayscale == true)
+        m_grayimage = image;
+    else
+        toGrayScale();
+
+    computeHistogram();
+    computeCumulativeHistogram();
+    computeEntropy();
+    computeValueRange();
+    computeBrightness();
+    computeContrast();
+
+}
+
 QImage NativeProcessor::processImage(int transformation)
 {
 
@@ -455,15 +476,23 @@ void NativeProcessor::updateImageInfo()
 
 void NativeProcessor::setResultImageasGray()
 {
-    m_grayimage = NativeProcessor(m_rimage).getGrayScale();
+    if (m_isgrayscale == true)
+        m_grayimage = NativeProcessor(m_rimage, true).getGrayScale();
+    else
+        m_grayimage = NativeProcessor(m_rimage).getGrayScale();
 }
 
 void NativeProcessor::setGrayImageasOriginal()
 {
-    m_image = NativeProcessor(m_grayimage).getOriginalImage();
+    m_image = m_grayimage;
+    m_isgrayscale = true;
 }
 
 void NativeProcessor::setResultImageasOriginal()
 {
-    m_image = NativeProcessor(m_rimage).getOriginalImage();
+    if (m_isgrayscale == true)
+        m_image = NativeProcessor(m_rimage, true).getOriginalImage();
+    else
+        m_image = NativeProcessor(m_rimage).getOriginalImage();
+
 }
