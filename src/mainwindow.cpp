@@ -48,6 +48,13 @@ void test_all(QImage image)
 
      result = np.gammaCorrection(0.5);
      result.save("../glvision/images/gammacorrection.png");
+
+    np.getGrayScale().save("../glvision/images/grayscale.png");
+    QImage test2("../glvision/images/kuvshi.jpg");
+    NativeProcessor np2(test2);
+    std::vector<double> temp_histogram = np2.getNormalizedCumulativeHistogram();
+
+    np.specifyHistogram(temp_histogram).save("../glvision/images/specification_test.png");
 }
 
 MainWindow::MainWindow(QWidget *parent)
@@ -94,6 +101,8 @@ void MainWindow::on_actionOpen_File_triggered()
     }  catch (std::exception& e) {
         qDebug() << "test";
     }
+
+    NativeProcessor np(images[0]);
 
 
 }

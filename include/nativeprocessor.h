@@ -46,6 +46,7 @@ private:
     std::vector<uint32_t> m_histogram;
     std::vector<uint32_t> m_cumulativehistogram;
     std::vector<double> m_normalizedhistogram;
+    std::vector<double> m_normalizedcumulativehistogram;
 
     std::pair<int, int> m_valuerange;
 
@@ -60,11 +61,13 @@ private:
     void computeHistogram();
     void computeCumulativeHistogram();
     void computeNormalizedHistogram();
+    void computeNormalizedCumulativeHistogram();
     void computeValueRange();
     void computeEntropy();
     void computeBrightness();
     void computeContrast();
     std::pair<int, int> *computeFullStretch(std::pair<int, int> start, std::pair<int, int> end, std::pair<int, int> range);
+
 
 public:
     NativeProcessor(QImage image);
@@ -80,6 +83,7 @@ public:
     std::vector<uint32_t> getHistogram();
     std::vector<uint32_t> getCumulativeHistogram();
     std::vector<double> getNormalizedHistogram();
+    std::vector<double> getNormalizedCumulativeHistogram();
     std::pair<int, int> valueRange();
     float getEntropy();
     std::pair<QColor, int> grayLevel(int x, int y);
@@ -92,6 +96,9 @@ public:
     QImage modifyContrast(float c);
     QImage gammaCorrection(float gamma);
     QImage gammaCorrectionGray(float gamma);
+
+    QImage equalizeHistogram();
+    QImage specifyHistogram(std::vector<double> otherhistogram);
 
     void updateImageInfo();
 

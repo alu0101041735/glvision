@@ -70,12 +70,32 @@ void NativeProcessor::computeNormalizedHistogram()
 
     new(&m_normalizedhistogram) std::vector<double>(256,0.0);
 
-    double alpha = (m_histogram.size()-1) / (m_width*m_height);
+    double h_size = m_histogram.size() -1;
+    double size = m_height * m_width;
+
+    double alpha = h_size / size;
+
     double aux = 0.0;
     for (unsigned long i = 0; i < m_histogram.size(); i++) {
         aux = m_histogram[i];
         m_normalizedhistogram[i] = aux * alpha;
     }
+}
+
+void NativeProcessor::computeNormalizedCumulativeHistogram()
+{
+    new(&m_normalizedcumulativehistogram) std::vector<double>(256,0.0);
+
+    double h_size = m_cumulativehistogram.size() -1;
+    double size = m_height * m_width;
+
+    double alpha = h_size / size;
+    double aux = 0.0;
+    for (unsigned long i = 0; i < m_histogram.size(); i++) {
+        aux = m_cumulativehistogram[i];
+        m_normalizedcumulativehistogram[i] = aux * alpha;
+    }
+
 }
 
 void NativeProcessor::computeValueRange()
@@ -179,6 +199,7 @@ NativeProcessor::NativeProcessor(QImage image): m_image(image)
     computeHistogram();
     computeCumulativeHistogram();
     computeNormalizedHistogram();
+    computeNormalizedCumulativeHistogram();
     computeEntropy();
     computeValueRange();
     computeBrightness();
@@ -203,6 +224,7 @@ NativeProcessor::NativeProcessor(QImage image, bool grayscale)
     computeHistogram();
     computeCumulativeHistogram();
     computeNormalizedHistogram();
+    computeNormalizedCumulativeHistogram();
     computeEntropy();
     computeValueRange();
     computeBrightness();
@@ -279,6 +301,11 @@ std::vector<uint32_t> NativeProcessor::getCumulativeHistogram()
 std::vector<double> NativeProcessor::getNormalizedHistogram()
 {
     return m_normalizedhistogram;
+}
+
+std::vector<double> NativeProcessor::getNormalizedCumulativeHistogram()
+{
+    return m_normalizedcumulativehistogram;
 }
 
 std::pair<int, int> NativeProcessor::valueRange()
@@ -432,7 +459,6 @@ QImage NativeProcessor::modifyContrast(float c)
     int new_blue;
 
     float fcf = (259*(c + 255))/(255*(259 - c));
-    std::cout << "\n\n\n" << fcf << "\n\n\n";
 
     QColor newcolor;
 
@@ -523,6 +549,70 @@ QImage NativeProcessor::gammaCorrectionGray(float gamma)
     }
 
     return m_rimage;
+}
+
+QImage NativeProcessor::equalizeHistogram()
+{
+
+    //Vout =  max [0, round(M/size * C0(Vin))]
+    std::vector<double> tul(256);
+    float j;
+    float aux;
+
+    for (unsigned long i = 0; i < m_histogram.size(); i++) {
+        j = i;
+        aux = m_cumulativehistogram[i] * (j/(m_width*m_height));
+        aux = round(aux);
+
+        if (aux < 0)
+            tul[i] = 0;
+        else
+            tul[i] = aux;
+    }
+
+    QColor color;
+    int gray;
+
+    for (int y = 0; y < m_height; y++) {
+        for (int x = 0; x < m_width; x++) {
+            gray = m_grayimage.pixelColor(x, y).red();
+
+            color.setRgb(tul[gray], tul[gray], tul[gray]);
+
+            m_rimage.setPixelColor(x, y, color);
+        }
+    }
+
+    return m_rimage;
+}
+
+QImage NativeProcessor::specifyHistogram(std::vector<double> otherhistogram)
+{
+    std::vector<int> tul(256,0.0);
+
+    int j;
+    for (uint16_t i = 0; i < m_histogram.size();  i++) {
+        j = m_histogram.size() -1;
+        do {
+            tul[i] = j;
+            j--;
+        } while ((j > 0) && (m_normalizedcumulativehistogram[i] <= otherhistogram[j]));
+    }
+
+    int gray;
+    QColor color;
+
+    for (int y = 0; y < m_height; y++) {
+        for (int x = 0; x < m_width; x++) {
+            gray = m_grayimage.pixelColor(x, y).red();
+
+            color.setRgb(tul[gray], tul[gray], tul[gray]);
+
+            m_rimage.setPixelColor(x, y, color);
+        }
+    }
+    return m_rimage;
+
 }
 
 void NativeProcessor::updateImageInfo()
