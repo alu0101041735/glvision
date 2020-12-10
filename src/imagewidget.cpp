@@ -231,12 +231,15 @@ void imageWidget::mouseMoveEvent(QMouseEvent *eventMove)
     QPoint mousePos = eventMove->pos();
     QPoint scenePos = mapToScene(mousePos).toPoint();
     QPoint imagePos = imagePixItem->mapFromScene(scenePos).toPoint();
-    //QPoint imagePos = scene->
-
+    if (processor == nullptr) {
+       processor = new NativeProcessor(this->image);
+    }
+    int value = processor->grayLevel(imagePos.x(), imagePos.y()).second;
     auto rect = items().first()->sceneBoundingRect().toRect();
+
     if (rect.contains(imagePos))
     {
-        emit mouseMoved(imagePos);
+        emit mouseMoved(imagePos, value);
     }
     qDebug() << mousePos << scenePos;
 

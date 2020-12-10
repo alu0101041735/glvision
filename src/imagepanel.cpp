@@ -49,8 +49,8 @@ void imagePanel::setHistrogram(QImage& image)
     //this->ui->graphicsView->fitInView(chart->boundingRect(), Qt::KeepAspectRatio);
 }
 
-void imagePanel::updateMousePos(QPoint &pos)
+void imagePanel::updateMousePos(QPoint &pos, int value)
 {
-    QString posString = QString("Current pos: %1, %2").arg(pos.x()).arg(pos.y());
+    QString posString = QString("Current pos: %1, %2 value: %3").arg(pos.x()).arg(pos.y()).arg(value);
     ui->mousePos->setText(posString);
 }
