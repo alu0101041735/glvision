@@ -89,7 +89,9 @@ void imageWidget::linTransform()
                                 ));
         }
 
-        NativeProcessor(this->image).processStretch(result);
+        QImage nImage = NativeProcessor(this->image).processStretch(result);
+        QString fileType = tr("test");
+        emit newImage(nImage, fileType);
     }
 }
 
