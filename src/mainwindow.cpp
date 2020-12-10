@@ -38,13 +38,13 @@ void test_all(QImage image)
     std::cout << "\n\nContrast: " << np.contrast();
     std::cout << "\n\nEntropy: " << np.getEntropy();
 
-    QImage original = np.getGrayScale();
+    QImage original = np.getOriginalImage();
     QImage result = np.modifyContrast(100);
     original.save("../glvision/images/original.png");
-    result.save("../glvision/images/result_brightness.png");
+    result.save("../glvision/images/result_bcontrast.png");
 
     result = np.modifyBrightness(1.2);
-    result.save("../glvision/images/result_contrast.png");
+    result.save("../glvision/images/result_brightness.png");
 
      result = np.gammaCorrection(0.5);
      result.save("../glvision/images/gammacorrection.png");
@@ -95,9 +95,9 @@ void MainWindow::on_actionOpen_File_triggered()
         qDebug() << "test";
     }
 
+    /*
     fileUrl = fileUrl.adjusted(QUrl::StripTrailingSlash);
     createTab(images.first(), fileUrl.fileName());
-    /*
     imageTab* newTab = new imageTab(images.first(), ui->tabWidget);
     ui->tabWidget->addTab( newTab, urls.first().toString());
     newTab->connectImageReturn(this);
@@ -123,10 +123,9 @@ void MainWindow::on_actionOpen_File_triggered()
     */
 
     NativeProcessor np(images[0]);
-    QImage original = np.getOriginalImage();
-    QImage result = np.modifyContrast(-100);
-    original.save("../glvision/images/original.png");
-    result.save("../glvision/images/result_contrast.png");
+    QImage result = np.gammaCorrection(0.5);
+    result.save("../glvision/images/result_gamma.jpg");
+
 
 }
 

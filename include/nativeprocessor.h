@@ -90,6 +90,7 @@ public:
     QImage modifyBrightness(float br);
     QImage modifyContrast(float c);
     QImage gammaCorrection(float gamma);
+    QImage gammaCorrectionGray(float gamma);
 
     void updateImageInfo();
 

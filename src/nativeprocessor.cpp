@@ -3,9 +3,9 @@
 void  NativeProcessor::toGrayScale()
 {
     QColor color;
-    int red;
-    int green;
-    int blue;
+    float red;
+    float green;
+    float blue;
     int result_color;
 
     new(&m_grayimage) QImage(m_width, m_height, QImage::Format_RGBA64);
@@ -16,7 +16,7 @@ void  NativeProcessor::toGrayScale()
            green = m_image.pixelColor(x, y).green();
            blue = m_image.pixelColor(x, y).blue();
 
-           result_color = (red + green + blue) / 3;
+           result_color = (red*0.222) + (green*0.707) + (blue*0.071);
 
            color.setRed(result_color);
            color.setGreen(result_color);
@@ -454,18 +454,6 @@ QImage NativeProcessor::modifyContrast(float c)
 
                 m_rimage.setPixelColor(x, y, newcolor);
 
-                if ((y == 500) && (x == 1000)) {
-                    std::cout << "original colors: " <<
-                                 "red: " << red <<
-                                 " green: " << green <<
-                                 " blue: " << blue <<
-                                 "\nNew colors: " <<
-                                 "red: " << new_red <<
-                                 " green: " << new_green <<
-                                 " blue: " << new_blue <<
-                                 "\nContrast: " << fcf << "\n";
-
-                }
             }
         }
         return m_rimage;
@@ -473,6 +461,44 @@ QImage NativeProcessor::modifyContrast(float c)
 
 QImage NativeProcessor::gammaCorrection(float gamma)
 {
+
+    float normalized_value;
+
+    float red;
+    float green;
+    float blue;
+    float newred;
+    float newgreen;
+    float  newblue;
+
+    QColor result;
+
+    for (int y = 0; y < m_height; y++) {
+        for (int x  = 0; x < m_width; x++) {
+            red = m_image.pixelColor(x,y).red();
+            green = m_image.pixelColor(x,y).green();
+            blue = m_image.pixelColor(x,y).blue();
+
+
+            normalized_value = red/255;
+            newred = pow(normalized_value, gamma);
+            normalized_value = green/255;
+            newgreen = pow(normalized_value, gamma);
+            normalized_value = blue/255;
+            newblue = pow(normalized_value, gamma);
+
+            result.setRgb(newred*255, newgreen*255, newblue*255);
+
+            m_rimage.setPixelColor(x, y, result);
+        }
+    }
+
+    return m_rimage;
+}
+
+QImage NativeProcessor::gammaCorrectionGray(float gamma)
+{
+
     float gray;
     float normalized_value;
     float b;
@@ -525,5 +551,4 @@ void NativeProcessor::setResultImageasOriginal()
         m_image = NativeProcessor(m_rimage, true).getOriginalImage();
     else
         m_image = NativeProcessor(m_rimage).getOriginalImage();
-
 }
