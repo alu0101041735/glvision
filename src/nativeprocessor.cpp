@@ -565,16 +565,19 @@ QImage NativeProcessor::gammaCorrectionGray(float gamma)
 
 QImage NativeProcessor::equalizeHistogram()
 {
-
-    //Vout =  max [0, round(M/size * C0(Vin))]
     std::vector<double> tul(256);
     float j;
     float aux;
 
     for (unsigned long i = 0; i < m_histogram.size(); i++) {
         j = i;
-        aux = m_cumulativehistogram[i] * (j/(m_width*m_height));
+        float width = m_width;
+        float height = m_height;
+        aux = m_cumulativehistogram[j] * (255/(width*height));
         aux = round(aux);
+
+
+        std::cout << aux << "\n";
 
         if (aux < 0)
             tul[i] = 0;
