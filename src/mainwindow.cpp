@@ -120,7 +120,7 @@ void MainWindow::on_actionOpen_File_triggered()
 
     */
 
-    NativeProcessor np(images[0]);
+    //NativeProcessor np(images[0]);
 
 }
 

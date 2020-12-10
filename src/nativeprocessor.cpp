@@ -94,12 +94,9 @@ void NativeProcessor::computeEntropy()
             normalized_histogram = m_histogram[i];
             normalized_histogram /= (m_width*m_height);
             pi += normalized_histogram*log2(normalized_histogram);
-            std::cout << i << " " << m_histogram[i] << " " << normalized_histogram << " " << pi << "\n";
         }
 
     }
-
-    std::cout << "Entropy: " << -pi << "\n";
     m_entropy = -pi;
 }
 
@@ -172,6 +169,30 @@ NativeProcessor::NativeProcessor(QImage image): m_image(image)
     computeValueRange();
     computeBrightness();
     computeContrast();
+}
+
+NativeProcessor::NativeProcessor(QImage image, bool grayscale)
+{
+    m_width = image.width();
+    m_height = image.height();
+
+    new(&m_rimage) QImage(m_width, m_height, QImage::Format_RGBA64);
+
+    if (grayscale == true) {
+        m_grayimage = image;
+        m_isgrayscale = true;
+    }
+    else {
+        toGrayScale();
+    }
+
+    computeHistogram();
+    computeCumulativeHistogram();
+    computeEntropy();
+    computeValueRange();
+    computeBrightness();
+    computeContrast();
+
 }
 
 QImage NativeProcessor::processImage(int transformation)
@@ -321,7 +342,7 @@ QImage NativeProcessor::imageDifference(QImage image)
     NativeProcessor second(image);
 
     if ((m_width != second.getWidth()) || (m_height != second.getHeight())) {
-       std::cout << "Fuc u!\n";
+        return m_image;
     }
     else {
         QColor colordiff;
@@ -455,15 +476,23 @@ void NativeProcessor::updateImageInfo()
 
 void NativeProcessor::setResultImageasGray()
 {
-    m_grayimage = NativeProcessor(m_rimage).getGrayScale();
+    if (m_isgrayscale == true)
+        m_grayimage = NativeProcessor(m_rimage, true).getGrayScale();
+    else
+        m_grayimage = NativeProcessor(m_rimage).getGrayScale();
 }
 
 void NativeProcessor::setGrayImageasOriginal()
 {
-    m_image = NativeProcessor(m_grayimage).getOriginalImage();
+    m_image = m_grayimage;
+    m_isgrayscale = true;
 }
 
 void NativeProcessor::setResultImageasOriginal()
 {
-    m_image = NativeProcessor(m_rimage).getOriginalImage();
+    if (m_isgrayscale == true)
+        m_image = NativeProcessor(m_rimage, true).getOriginalImage();
+    else
+        m_image = NativeProcessor(m_rimage).getOriginalImage();
+
 }
