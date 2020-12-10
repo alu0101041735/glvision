@@ -55,8 +55,7 @@ void imageWidget::ShowContextMenu(const QPoint &pos)
 void imageWidget::toGrayscale(bool)
 {
     qDebug() << "to grayscale";
-    QImage grayImage = NativeProcessor(this->image).processImage(GRAYSCALE);
-    grayImage.save("gray.png");
+    QImage grayImage = NativeProcessor(this->image).getGrayScale();
     QString fileType = tr("test");
     emit newImage(grayImage, fileType);
 
@@ -90,7 +89,7 @@ void imageWidget::linTransform()
                                 ));
         }
 
-        //NativeProcessor(this->image).processStretch(result);
+        NativeProcessor(this->image).processStretch(result);
     }
 }
 
@@ -128,6 +127,10 @@ void imageWidget::adjustContrast()
 void imageWidget::equalizeHistogram()
 {
 
+    QImage nImage = NativeProcessor(image).equalizeHistogram();
+    QString format = tr("test");
+    emit newImage(nImage, format);
+
 }
 
 void imageWidget::specifyHistogram()
@@ -150,8 +153,8 @@ void imageWidget::specifyHistogram()
     file = fileDialog.selectedUrls();
 
     QImage image(file.first().path());
-    //auto histogram = NativeProcessor(image).getNormalizedHistogram();
-    //image = NativeProcessor(this->image).specifyHistogram(histogram);
+    auto histogram = NativeProcessor(image).getNormalizedCumulativeHistogram();
+    image = NativeProcessor(this->image).specifyHistogram(histogram);
     QString format = tr("test");
     emit newImage(image, format);
 }
