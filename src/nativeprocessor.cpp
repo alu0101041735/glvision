@@ -170,11 +170,14 @@ void NativeProcessor::computeContrast()
 std::vector<std::pair<int, int>> NativeProcessor::computeFullStretch(std::pair<int, int> start, std::pair<int, int> end, std::pair<int, int> range)
 {
 
-    float slope = (end.second - start.second)/(end.first - start.first);
-    float b = start.second - slope*start.first;
+    std::pair<float,float> aux_start = start;
+    std::pair<float,float> aux_end = end;
 
-    //std::pair<int, int> *result = new std::pair<int, int>(range.first - range.second, 0);
-    std::vector<std::pair<int, int>> result(range.first - range.second);
+
+    float slope = (aux_end.second - aux_start.second)/(aux_end.first - aux_start.first);
+    float b = aux_start.second - (slope*aux_start.first);
+
+    std::vector<std::pair<int, int>> result(range.second - range.first);
 
     int v = 0;
     for (int i = range.first; i < range.second; i++) {
