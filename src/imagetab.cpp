@@ -10,13 +10,13 @@ imageTab::imageTab(QWidget *parent) :
     ui->setupUi(this);
 }
 
-imageTab::imageTab(QImage &image, QWidget *parent) :
+imageTab::imageTab(QImage &image, QString& format, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::imageTab)
 {
     NativeProcessor imagePr(image);
     pair dimensions(imagePr.getHeight(), imagePr.getWidth());
-    imageInfo info(image.format(),
+    imageInfo info(format,
                    dimensions,
                    pair(0, 0),
                    imagePr.brightness(),
@@ -37,6 +37,7 @@ imageTab::~imageTab()
 
 void imageTab::connectImageReturn(QMainWindow *receiever)
 {
-    connect(this->ui->image, SIGNAL(newImage(QImage&)), receiever, SLOT(receieveImage(QImage&)));
+    connect(this->ui->image, SIGNAL(newImage(QImage&, QString&)),
+            receiever, SLOT(receieveImage(QImage&, QString&)));
 
 }

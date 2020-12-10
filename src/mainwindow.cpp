@@ -9,6 +9,7 @@
 #include <QDebug>
 #include "imagetab.h"
 #include <QtCharts>
+#include "imageinfo.h"
 
 
 
@@ -88,50 +89,21 @@ void MainWindow::on_actionOpen_File_triggered()
     }
 
     try {
-   //     this->ui->image->display(images.first());
+        QFileInfo info(files.first().path());
+        createTab(images.first(), info.completeSuffix(), files.first().fileName());
     }  catch (std::exception& e) {
         qDebug() << "test";
     }
-
-    fileUrl = fileUrl.adjusted(QUrl::StripTrailingSlash);
-    createTab(images.first(), fileUrl.fileName());
-    /*
-    imageTab* newTab = new imageTab(images.first(), ui->tabWidget);
-    ui->tabWidget->addTab( newTab, urls.first().toString());
-    newTab->connectImageReturn(this);
-    auto index = ui->tabWidget->currentIndex();
-    */
-
-    //this->ui->tabWidget->insertTab(this);
-    //tabs.append()
-    //this->ui->tabWidget->currentIndex();
-    //tabs.append(new imageTab(this->ui->tab_2));
-
-    //Histogrem branch
-    
-
-
-    /*
-    clHandler image(images[0]);
-    image.clKernelSetup(GRAYSCALE);
-    image.runKernel();
-
-    QImage result = image.getImage();
-
-    */
-
-    //NativeProcessor np(images[0]);
-
 }
 
-void MainWindow::receieveImage(QImage &image)
+void MainWindow::receieveImage(QImage &image, QString& format)
 {
-   createTab(image, tr("prueba"));
+   createTab(image, format, tr("prueba"));
 }
 
-void MainWindow::createTab(QImage &image, QString title)
+void MainWindow::createTab(QImage &image, QString format, QString title)
 {
-    imageTab* newTab = new imageTab(image, ui->tabWidget);
+    imageTab* newTab = new imageTab(image, format, ui->tabWidget);
     ui->tabWidget->addTab( newTab, title);
     newTab->connectImageReturn(this);
     //auto index = ui->tabWidget->currentIndex();

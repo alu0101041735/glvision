@@ -51,7 +51,8 @@ void imageWidget::toGrayscale(bool)
     qDebug() << "to grayscale";
     QImage grayImage = NativeProcessor(this->image).processImage(GRAYSCALE);
     grayImage.save("gray.png");
-    emit newImage(grayImage);
+    QString fileType = tr("test");
+    emit newImage(grayImage, fileType);
 
 }
 

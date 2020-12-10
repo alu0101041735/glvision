@@ -33,7 +33,7 @@ public slots:
 
 signals:
    void mouseMoved(QPoint& pos);
-   void newImage(QImage& image);
+   void newImage(QImage& image, QString& format);
 
 
 };

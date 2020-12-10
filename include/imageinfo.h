@@ -10,7 +10,7 @@ typedef QPair<unsigned, unsigned> pair;
 class imageInfo
 {
 private:
-    QImage::Format fileType;
+    QString fileType;
     pair dimensions;
     pair range;
     unsigned brightness;
@@ -20,8 +20,8 @@ private:
 
 public:
     imageInfo();
-    imageInfo(QImage::Format type, pair dim, pair range, unsigned br, unsigned cont, unsigned ent);
-    inline QImage::Format getFormat() {return fileType;}
+    imageInfo(QString type, pair dim, pair range, unsigned br, unsigned cont, unsigned ent);
+    inline QString getFormat() {return fileType;}
     inline pair getDimensions() { return dimensions;}
     inline pair getRange() { return range;}
     inline unsigned getBrightness() { return brightness;}
