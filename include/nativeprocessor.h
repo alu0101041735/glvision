@@ -66,7 +66,7 @@ private:
     void computeEntropy();
     void computeBrightness();
     void computeContrast();
-    std::pair<int, int> *computeFullStretch(std::pair<int, int> start, std::pair<int, int> end, std::pair<int, int> range);
+    std::vector<std::pair<int, int>> computeFullStretch(std::pair<int, int> start, std::pair<int, int> end, std::pair<int, int> range);
 
 
 public:
@@ -90,7 +90,7 @@ public:
     int brightness();
     int contrast();
 
-    QImage processStretch(std::pair<int, int> *table);
+    QImage processStretch(std::vector<std::pair<int, int>> table);
     QImage imageDifference(QImage image);
     QImage modifyBrightness(float br);
     QImage modifyContrast(float c);

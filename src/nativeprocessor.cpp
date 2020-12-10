@@ -46,8 +46,6 @@ void NativeProcessor::computeHistogram()
             m_histogram[gray_level] += 1;
         }
     }
-
-
 }
 
 void NativeProcessor::computeCumulativeHistogram()
@@ -169,13 +167,14 @@ void NativeProcessor::computeContrast()
 
 }
 
-std::pair<int, int> *NativeProcessor::computeFullStretch(std::pair<int, int> start, std::pair<int, int> end, std::pair<int, int> range)
+std::vector<std::pair<int, int>> NativeProcessor::computeFullStretch(std::pair<int, int> start, std::pair<int, int> end, std::pair<int, int> range)
 {
 
     float slope = (end.second - start.second)/(end.first - start.first);
     float b = start.second - slope*start.first;
 
-    std::pair<int, int> *result = new std::pair<int, int>(range.first - range.second, 0);
+    //std::pair<int, int> *result = new std::pair<int, int>(range.first - range.second, 0);
+    std::vector<std::pair<int, int>> result(range.first - range.second);
 
     int v = 0;
     for (int i = range.first; i < range.second; i++) {
@@ -189,13 +188,19 @@ std::pair<int, int> *NativeProcessor::computeFullStretch(std::pair<int, int> sta
 
 NativeProcessor::NativeProcessor(QImage image): m_image(image)
 {
-
     m_width = image.width();
     m_height = image.height();
 
     new(&m_rimage) QImage(m_width, m_height, QImage::Format_RGBA64);
 
-    toGrayScale();
+    if (m_image.allGray()) {
+        m_grayimage = m_image;
+        m_isgrayscale = true;
+    }
+    else {
+        toGrayScale();
+    }
+
     computeHistogram();
     computeCumulativeHistogram();
     computeNormalizedHistogram();
@@ -338,7 +343,7 @@ int NativeProcessor::contrast()
     return m_contrast;
 }
 
-QImage NativeProcessor::processStretch(std::pair<int, int> *table)
+QImage NativeProcessor::processStretch(std::vector<std::pair<int, int>> table)
 {
 
     std::pair<int, int> fullstretch[256];
@@ -353,7 +358,8 @@ QImage NativeProcessor::processStretch(std::pair<int, int> *table)
         size.first = start.first;
         size.second = end.first;
 
-        std::pair<int, int> *aux = computeFullStretch(start, end, size);
+        //std::pair<int, int> *aux = computeFullStretch(start, end, size);
+        std::vector<std::pair<int, int>> aux =  computeFullStretch(start, end, size);
 
         //int aux_size =  sizeof(&aux)/sizeof(std::pair<int, int>);
 
