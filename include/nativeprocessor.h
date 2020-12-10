@@ -12,6 +12,8 @@
 #include <set>
 #include <math.h>
 #include <tgmath.h>
+#include <time.h>
+#include <stdlib.h>
 
 
 enum TransformationFlags
@@ -36,6 +38,8 @@ private:
     QImage m_grayimage;
     QImage m_rimage;
 
+    bool m_isgrayscale;
+
     int m_width;
     int m_height;
 
@@ -47,7 +51,7 @@ private:
     int m_brightness;
     int m_contrast;
 
-    long int m_entropy;
+    float m_entropy;
 
     void toGrayScale();
     void toGaussian();
@@ -62,22 +66,34 @@ private:
 
 public:
     NativeProcessor(QImage image);
+    NativeProcessor(QImage image, bool grayscale);
     QImage processImage( int transformation);
     void saveImage();
     int getWidth();
     int getHeight();
+    char *getFiletype();
     QImage getGrayScale();
     QImage getResultImage();
+    QImage getOriginalImage();
     std::vector<uint32_t> getHistogram();
     std::vector<uint32_t> getCumulativeHistogram();
     std::pair<int, int> valueRange();
-    int getEntropy();
+    float getEntropy();
     std::pair<QColor, int> grayLevel(int x, int y);
     int brightness();
     int contrast();
 
     QImage processStretch(std::pair<int, int> *table);
     QImage imageDifference(QImage image);
+    QImage modifyBrightness(float br);
+    QImage modifyContrast(int c);
+    QImage gammaCorrection(float gamma);
+
+    void updateImageInfo();
+
+    void setResultImageasGray();
+    void setGrayImageasOriginal();
+    void setResultImageasOriginal();
 
 };
 

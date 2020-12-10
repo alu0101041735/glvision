@@ -10,11 +10,11 @@ void  NativeProcessor::toGrayScale()
 
     new(&m_grayimage) QImage(m_width, m_height, QImage::Format_RGBA64);
 
-   for (int i = 0; i < m_height; i++){
-       for (int j = 0; j < m_width; j++) {
-           red = m_image.pixelColor(j, i).red();
-           green = m_image.pixelColor(j, i).green();
-           blue = m_image.pixelColor(j, i).blue();
+   for (int y = 0; y < m_height; y++){
+       for (int x = 0; x < m_width; x++) {
+           red = m_image.pixelColor(x, y).red();
+           green = m_image.pixelColor(x, y).green();
+           blue = m_image.pixelColor(x, y).blue();
 
            result_color = (red + green + blue) / 3;
 
@@ -22,7 +22,7 @@ void  NativeProcessor::toGrayScale()
            color.setGreen(result_color);
            color.setBlue(result_color);
 
-           m_grayimage.setPixelColor(j, i, color);
+           m_grayimage.setPixelColor(x, y, color);
        }
    }
 
@@ -86,14 +86,17 @@ void NativeProcessor::computeValueRange()
 
 void NativeProcessor::computeEntropy()
 {
-    long double pi = 0;
-    float aux;
+    float pi = 0.0;
+    float normalized_histogram = 0.0;
 
     for (unsigned long i = 0; i < m_histogram.size(); i++) {
-        aux = (i/m_histogram.size());
-        pi += aux*log2(aux);
-    }
+        if (m_histogram[i] != 0) {
+            normalized_histogram = m_histogram[i];
+            normalized_histogram /= (m_width*m_height);
+            pi += normalized_histogram*log2(normalized_histogram);
+        }
 
+    }
     m_entropy = -pi;
 }
 
@@ -130,7 +133,6 @@ void NativeProcessor::computeContrast()
     }
 
     m_contrast = sqrt(sum / (m_width*m_height));
-    std::cout << "CONTRASTE: " << sum << " " << m_contrast << "\n\n\n\n\n";
 
 }
 
@@ -163,9 +165,34 @@ NativeProcessor::NativeProcessor(QImage image): m_image(image)
     toGrayScale();
     computeHistogram();
     computeCumulativeHistogram();
+    computeEntropy();
     computeValueRange();
     computeBrightness();
     computeContrast();
+}
+
+NativeProcessor::NativeProcessor(QImage image, bool grayscale)
+{
+    m_width = image.width();
+    m_height = image.height();
+
+    new(&m_rimage) QImage(m_width, m_height, QImage::Format_RGBA64);
+
+    if (grayscale == true) {
+        m_grayimage = image;
+        m_isgrayscale = true;
+    }
+    else {
+        toGrayScale();
+    }
+
+    computeHistogram();
+    computeCumulativeHistogram();
+    computeEntropy();
+    computeValueRange();
+    computeBrightness();
+    computeContrast();
+
 }
 
 QImage NativeProcessor::processImage(int transformation)
@@ -219,6 +246,11 @@ QImage NativeProcessor::getResultImage()
     return m_rimage;
 }
 
+QImage NativeProcessor::getOriginalImage()
+{
+    return m_image;
+}
+
 std::vector<uint32_t> NativeProcessor::getHistogram()
 {
     return m_histogram;
@@ -234,7 +266,7 @@ std::pair<int, int> NativeProcessor::valueRange()
     return m_valuerange;
 }
 
-int NativeProcessor::getEntropy()
+float NativeProcessor::getEntropy()
 {
     return m_entropy;
 }
@@ -276,7 +308,7 @@ QImage NativeProcessor::processStretch(std::pair<int, int> *table)
 
         std::pair<int, int> *aux = computeFullStretch(start, end, size);
 
-        int aux_size =  sizeof(&aux)/sizeof(std::pair<int, int>);
+        //int aux_size =  sizeof(&aux)/sizeof(std::pair<int, int>);
 
         //std::copy(aux, aux+aux_size, fullstretch[start.first]);
         int w = 0;
@@ -310,7 +342,7 @@ QImage NativeProcessor::imageDifference(QImage image)
     NativeProcessor second(image);
 
     if ((m_width != second.getWidth()) || (m_height != second.getHeight())) {
-       std::cout << "Fuc u!\n";
+        return m_image;
     }
     else {
         QColor colordiff;
@@ -323,4 +355,144 @@ QImage NativeProcessor::imageDifference(QImage image)
         }
     }
     return m_rimage;
+}
+
+QImage NativeProcessor::modifyBrightness(float br)
+{
+    if (br < 0)
+        br = -br;
+    QColor newcolor;
+
+    int red;
+    int green;
+    int blue;
+
+    int new_red;
+    int new_green;
+    int new_blue;
+
+    for (int y = 0; y < m_height; y++) {
+        for (int x = 0; x < m_width; x++) {
+            red = m_image.pixelColor(x, y).red();
+            green = m_image.pixelColor(x, y).green();
+            blue = m_image.pixelColor(x, y).blue();
+
+            new_red = red * br;
+            new_green = green * br;
+            new_blue = blue * br;
+
+            new_red = new_red < 0 ? 0 : new_red;
+            new_red = new_red > 255 ? 255 : new_red;
+
+            new_green = new_green < 0 ? 0 : new_green;
+            new_green = new_green > 255 ? 255 : new_green;
+
+            new_blue = new_blue < 0 ? 0 : new_blue;
+            new_blue = new_blue > 255 ? 255 : new_blue;
+
+            newcolor.setRgb(new_red, new_green, new_blue);
+
+            m_rimage.setPixelColor(x, y, newcolor);
+        }
+    }
+    return m_rimage;
+}
+
+QImage NativeProcessor::modifyContrast(int c)
+{
+    if ( c > 255)
+        c = 255;
+    if (c < -255)
+        c = -255;
+    int red;
+    int green;
+    int blue;
+    int new_red;
+    int new_green;
+    int new_blue;
+    float fcf = (259*(c + 255))/(255*(259 - c));
+
+    QColor newcolor;
+
+        for (int y = 0; y < m_height; y++) {
+            for (int x = 0; x < m_width; x++) {
+                red = m_image.pixelColor(x, y).red();
+                green = m_image.pixelColor(x, y).green();
+                blue = m_image.pixelColor(x, y).blue();
+
+                new_red = (fcf * (red - 128)) + 128;
+                new_green = (fcf * (green - 128)) + 128;
+                new_blue = (fcf * (blue - 128)) + 128;
+
+                new_red = new_red < 0 ? 0 : new_red;
+                new_red = new_red > 255 ? 255 : new_red;
+
+                new_green = new_green < 0 ? 0 : new_green;
+                new_green = new_green > 255 ? 255 : new_green;
+
+                new_blue = new_blue < 0 ? 0 : new_blue;
+                new_blue = new_blue > 255 ? 255 : new_blue;
+
+                newcolor.setRgb(new_red, new_green, new_blue);
+
+                m_rimage.setPixelColor(x, y, newcolor);
+            }
+        }
+        return m_rimage;
+}
+
+QImage NativeProcessor::gammaCorrection(float gamma)
+{
+    float gray;
+    float normalized_value;
+    float b;
+
+    QColor result;
+
+    for (int y = 0; y < m_height; y++) {
+        for (int x  = 0; x < m_width; x++) {
+            gray = m_grayimage.pixelColor(x,y).red();
+            normalized_value = gray/255;
+            b = pow(normalized_value, gamma);
+
+            result.setRgb(b*255, b*255, b*255);
+
+            m_rimage.setPixelColor(x, y, result);
+        }
+    }
+
+    return m_rimage;
+}
+
+void NativeProcessor::updateImageInfo()
+{
+    computeHistogram();
+    computeCumulativeHistogram();
+    computeValueRange();
+    computeEntropy();
+    computeBrightness();
+    computeContrast();
+}
+
+void NativeProcessor::setResultImageasGray()
+{
+    if (m_isgrayscale == true)
+        m_grayimage = NativeProcessor(m_rimage, true).getGrayScale();
+    else
+        m_grayimage = NativeProcessor(m_rimage).getGrayScale();
+}
+
+void NativeProcessor::setGrayImageasOriginal()
+{
+    m_image = m_grayimage;
+    m_isgrayscale = true;
+}
+
+void NativeProcessor::setResultImageasOriginal()
+{
+    if (m_isgrayscale == true)
+        m_image = NativeProcessor(m_rimage, true).getOriginalImage();
+    else
+        m_image = NativeProcessor(m_rimage).getOriginalImage();
+
 }
