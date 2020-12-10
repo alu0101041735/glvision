@@ -65,6 +65,19 @@ void NativeProcessor::computeCumulativeHistogram()
 
 }
 
+void NativeProcessor::computeNormalizedHistogram()
+{
+
+    new(&m_normalizedhistogram) std::vector<double>(256,0.0);
+
+    double alpha = (m_histogram.size()-1) / (m_width*m_height);
+    double aux = 0.0;
+    for (unsigned long i = 0; i < m_histogram.size(); i++) {
+        aux = m_histogram[i];
+        m_normalizedhistogram[i] = aux * alpha;
+    }
+}
+
 void NativeProcessor::computeValueRange()
 {
     std::pair<int, int> range;
@@ -165,6 +178,7 @@ NativeProcessor::NativeProcessor(QImage image): m_image(image)
     toGrayScale();
     computeHistogram();
     computeCumulativeHistogram();
+    computeNormalizedHistogram();
     computeEntropy();
     computeValueRange();
     computeBrightness();
@@ -188,6 +202,7 @@ NativeProcessor::NativeProcessor(QImage image, bool grayscale)
 
     computeHistogram();
     computeCumulativeHistogram();
+    computeNormalizedHistogram();
     computeEntropy();
     computeValueRange();
     computeBrightness();
@@ -468,6 +483,7 @@ void NativeProcessor::updateImageInfo()
 {
     computeHistogram();
     computeCumulativeHistogram();
+    computeNormalizedHistogram();
     computeValueRange();
     computeEntropy();
     computeBrightness();

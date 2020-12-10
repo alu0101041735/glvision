@@ -45,6 +45,7 @@ private:
 
     std::vector<uint32_t> m_histogram;
     std::vector<uint32_t> m_cumulativehistogram;
+    std::vector<double> m_normalizedhistogram;
 
     std::pair<int, int> m_valuerange;
 
@@ -58,6 +59,7 @@ private:
 
     void computeHistogram();
     void computeCumulativeHistogram();
+    void computeNormalizedHistogram();
     void computeValueRange();
     void computeEntropy();
     void computeBrightness();
