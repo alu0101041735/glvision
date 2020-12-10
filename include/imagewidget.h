@@ -23,6 +23,8 @@ private:
     QGraphicsPixmapItem* imagePixItem;
     QImage image;
     NativeProcessor* processor;
+    QPoint pressEventPos;
+    QPoint releaseEventPos;
 
 
 public slots:
