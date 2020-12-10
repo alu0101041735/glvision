@@ -71,6 +71,7 @@ public:
     void saveImage();
     int getWidth();
     int getHeight();
+    char *getFiletype();
     QImage getGrayScale();
     QImage getResultImage();
     QImage getOriginalImage();

@@ -94,12 +94,9 @@ void NativeProcessor::computeEntropy()
             normalized_histogram = m_histogram[i];
             normalized_histogram /= (m_width*m_height);
             pi += normalized_histogram*log2(normalized_histogram);
-            std::cout << i << " " << m_histogram[i] << " " << normalized_histogram << " " << pi << "\n";
         }
 
     }
-
-    std::cout << "Entropy: " << -pi << "\n";
     m_entropy = -pi;
 }
 
@@ -181,10 +178,13 @@ NativeProcessor::NativeProcessor(QImage image, bool grayscale)
 
     new(&m_rimage) QImage(m_width, m_height, QImage::Format_RGBA64);
 
-    if (grayscale == true)
+    if (grayscale == true) {
         m_grayimage = image;
-    else
+        m_isgrayscale = true;
+    }
+    else {
         toGrayScale();
+    }
 
     computeHistogram();
     computeCumulativeHistogram();
@@ -342,7 +342,7 @@ QImage NativeProcessor::imageDifference(QImage image)
     NativeProcessor second(image);
 
     if ((m_width != second.getWidth()) || (m_height != second.getHeight())) {
-       std::cout << "Fuc u!\n";
+        return m_image;
     }
     else {
         QColor colordiff;
