@@ -1,12 +1,14 @@
 #include "imagewidget.h"
 #include <QDebug>
 #include <QMenu>
+#include <QInputDialog>
 #include <QAction>
 #include "imagemenu.h"
 #include "nativeprocessor.h"
 
 imageWidget::imageWidget(QWidget *parent) : QGraphicsView(parent)
 {
+    processor = nullptr;
     scene = new QGraphicsScene(this);
     this->setScene(scene);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -14,7 +16,9 @@ imageWidget::imageWidget(QWidget *parent) : QGraphicsView(parent)
     setMouseTracking(true);
 }
 
-imageWidget::imageWidget(QImage image, QWidget *parent) : QGraphicsView(parent)
+imageWidget::imageWidget(QImage image, QWidget *parent) :
+    QGraphicsView(parent),
+    processor(new NativeProcessor(image))
 {
     this->image = image;
     scene = new QGraphicsScene(this);
@@ -32,8 +36,8 @@ void imageWidget::resizeEvent(QResizeEvent *event) {
 void imageWidget::display(QImage& image)
 {
     this->image = image;
-    QGraphicsPixmapItem* item = new QGraphicsPixmapItem(QPixmap::fromImage(image));
-    scene->addItem(item);
+    imagePixItem = new QGraphicsPixmapItem(QPixmap::fromImage(image));
+    scene->addItem(imagePixItem);
 
     show();
 }
@@ -56,6 +60,83 @@ void imageWidget::toGrayscale(bool)
 
 }
 
+void imageWidget::linTransform()
+{
+
+}
+
+void imageWidget::adjustBrightnes()
+{
+    bool* ok = new bool(false);
+    float multiplier;
+    multiplier = QInputDialog::getDouble(this, tr("Brightness"),
+                                         tr("Multiplier"), 1, 0, 1000,
+                                         2, ok, Qt::WindowFlags(), 0.01
+                                         );
+    if (*ok) {
+        QImage image = NativeProcessor(this->image).modifyBrightness(multiplier);
+        QString Filetype = tr("test");
+        emit newImage(image, Filetype);
+    }
+}
+
+void imageWidget::adjustContrast()
+{
+    bool* ok = new bool(false);
+    int newContrast;
+    newContrast = QInputDialog::getInt(this, tr("Contrast"),
+                                         tr("New contrast"), 0, -255, 255,
+                                         1, ok, Qt::WindowFlags()
+                                         );
+    if (*ok) {
+        QImage image = NativeProcessor(this->image).modifyContrast(newContrast);
+        QString Filetype = tr("test");
+        emit newImage(image, Filetype);
+    }
+
+}
+
+void imageWidget::equalizeHistogram()
+{
+
+}
+
+void imageWidget::specifyHistogram()
+{
+
+}
+
+void imageWidget::gammaCorrection()
+{
+    bool* ok = new bool(false);
+    float multiplier;
+    multiplier = QInputDialog::getDouble(this, tr("Gamma"),
+                                         tr("Multiplier"), 1, 0, 1000,
+                                         2, ok, Qt::WindowFlags(), 0.01
+                                         );
+    if (*ok) {
+        QImage image = NativeProcessor(this->image).gammaCorrection(multiplier);
+        QString Filetype = tr("test");
+        emit newImage(image, Filetype);
+    }
+
+}
+
+void imageWidget::imgCrossSection()
+{
+
+}
+
+void imageWidget::digitalization()
+{
+
+}
+
+void imageWidget::imageDifference()
+{
+
+}
+
 void imageWidget::mousePressEvent(QMouseEvent *eventPress)
 {
     if (eventPress->button() == Qt::LeftButton)
@@ -72,20 +153,16 @@ void imageWidget::mouseReleaseEvent(QMouseEvent *eventRelease)
 
 void imageWidget::mouseMoveEvent(QMouseEvent *eventMove)
 {
-    qDebug() << eventMove->pos();
     QPoint mousePos = eventMove->pos();
-    auto item = this->items().first();
-    auto itemPos = item->pos();
-    auto rect = item->sceneBoundingRect().toRect();
-    qreal px = itemPos.rx();
-    qreal py = itemPos.ry();
-    rect = rect.adjusted(px, py, px, py);
-    if (rect.contains(mousePos))
+    QPoint scenePos = mapToScene(mousePos).toPoint();
+    QPoint imagePos = imagePixItem->mapFromScene(scenePos).toPoint();
+    //QPoint imagePos = scene->
+
+    auto rect = items().first()->sceneBoundingRect().toRect();
+    if (rect.contains(imagePos))
     {
-        mousePos += itemPos.toPoint();
-        qDebug() << mousePos;
-        qDebug() << this->pos();
-        emit mouseMoved(mousePos);
+        emit mouseMoved(imagePos);
     }
+    qDebug() << mousePos << scenePos;
 
 }
