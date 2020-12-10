@@ -1,12 +1,16 @@
 #include "imagewidget.h"
 #include <QDebug>
 #include <QMenu>
+#include <QInputDialog>
 #include <QAction>
 #include "imagemenu.h"
 #include "nativeprocessor.h"
+#include <QFileDialog>
+#include <QStandardPaths>
 
 imageWidget::imageWidget(QWidget *parent) : QGraphicsView(parent)
 {
+    processor = nullptr;
     scene = new QGraphicsScene(this);
     this->setScene(scene);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -14,7 +18,9 @@ imageWidget::imageWidget(QWidget *parent) : QGraphicsView(parent)
     setMouseTracking(true);
 }
 
-imageWidget::imageWidget(QImage image, QWidget *parent) : QGraphicsView(parent)
+imageWidget::imageWidget(QImage image, QWidget *parent) :
+    QGraphicsView(parent),
+    processor(new NativeProcessor(image))
 {
     this->image = image;
     scene = new QGraphicsScene(this);
@@ -32,8 +38,8 @@ void imageWidget::resizeEvent(QResizeEvent *event) {
 void imageWidget::display(QImage& image)
 {
     this->image = image;
-    QGraphicsPixmapItem* item = new QGraphicsPixmapItem(QPixmap::fromImage(image));
-    scene->addItem(item);
+    imagePixItem = new QGraphicsPixmapItem(QPixmap::fromImage(image));
+    scene->addItem(imagePixItem);
 
     show();
 }
@@ -56,6 +62,151 @@ void imageWidget::toGrayscale(bool)
 
 }
 
+void imageWidget::linTransform()
+{
+    bool* ok = new bool(false);
+    int numPoints = QInputDialog::getInt(this, tr("How many points"),
+                                         tr(""), 0, 0, 20, 1,ok
+                                         );
+    if (*ok) {
+        QList<QString> points;
+        for (int i = 0; i < numPoints; ++i)
+            points.append(
+                        QInputDialog::getText(
+                            this,
+                            tr("Point"),
+                            tr(""),
+                            QLineEdit::Normal,
+                            tr("Insert the two numbers separated by a comma"),
+                            ok
+                            )
+                        );
+        std::vector<std::pair<int, int>> result;
+        for (auto pointStr : points) {
+           auto pointStrList = pointStr.split(',');
+           result.push_back(std::make_pair(
+                                pointStrList[0].toInt(),
+                                pointStrList[1].toInt()
+                                ));
+        }
+
+        //NativeProcessor(this->image).processStretch(result);
+    }
+}
+
+void imageWidget::adjustBrightnes()
+{
+    bool* ok = new bool(false);
+    float multiplier;
+    multiplier = QInputDialog::getDouble(this, tr("Brightness"),
+                                         tr("Multiplier"), 1, 0, 1000,
+                                         2, ok, Qt::WindowFlags(), 0.01
+                                         );
+    if (*ok) {
+        QImage image = NativeProcessor(this->image).modifyBrightness(multiplier);
+        QString Filetype = tr("test");
+        emit newImage(image, Filetype);
+    }
+}
+
+void imageWidget::adjustContrast()
+{
+    bool* ok = new bool(false);
+    int newContrast;
+    newContrast = QInputDialog::getInt(this, tr("Contrast"),
+                                         tr("New contrast"), 0, -255, 255,
+                                         1, ok, Qt::WindowFlags()
+                                         );
+    if (*ok) {
+        QImage image = NativeProcessor(this->image).modifyContrast(newContrast);
+        QString Filetype = tr("test");
+        emit newImage(image, Filetype);
+    }
+
+}
+
+void imageWidget::equalizeHistogram()
+{
+
+}
+
+void imageWidget::specifyHistogram()
+{
+    QUrl fileUrl;
+    QList<QUrl> urls;
+    QList<QUrl> file;
+
+    urls.append(QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first()));
+    urls.append(QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first()));
+    urls.append(QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).first()));
+
+    QFileDialog fileDialog(this, "Open file");
+    fileDialog.setSidebarUrls(urls);
+    fileDialog.setFileMode(QFileDialog::ExistingFile);
+    fileDialog.setFilter(QDir::Files | QDir::Dirs | QDir::Drives | QDir::NoDotAndDotDot);
+    fileDialog.setNameFilter(QString("*.png *.jpg"));
+    fileDialog.setDirectoryUrl(urls.first());
+    fileDialog.exec();
+    file = fileDialog.selectedUrls();
+
+    QImage image(file.first().path());
+    //auto histogram = NativeProcessor(image).getNormalizedHistogram();
+    //image = NativeProcessor(this->image).specifyHistogram(histogram);
+    QString format = tr("test");
+    emit newImage(image, format);
+}
+
+void imageWidget::gammaCorrection()
+{
+    bool* ok = new bool(false);
+    float multiplier;
+    multiplier = QInputDialog::getDouble(this, tr("Gamma"),
+                                         tr("Multiplier"), 1, 0, 1000,
+                                         2, ok, Qt::WindowFlags(), 0.01
+                                         );
+    if (*ok) {
+        QImage image = NativeProcessor(this->image).gammaCorrection(multiplier);
+        QString Filetype = tr("test");
+        emit newImage(image, Filetype);
+    }
+
+}
+
+void imageWidget::imgCrossSection()
+{
+
+}
+
+void imageWidget::digitalization()
+{
+
+}
+
+void imageWidget::imageDifference()
+{
+    QUrl fileUrl;
+    QList<QUrl> urls;
+    QList<QUrl> file;
+
+    urls.append(QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first()));
+    urls.append(QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first()));
+    urls.append(QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).first()));
+
+    QFileDialog fileDialog(this, "Open file");
+    fileDialog.setSidebarUrls(urls);
+    fileDialog.setFileMode(QFileDialog::ExistingFile);
+    fileDialog.setFilter(QDir::Files | QDir::Dirs | QDir::Drives | QDir::NoDotAndDotDot);
+    fileDialog.setNameFilter(QString("*.png *.jpg"));
+    fileDialog.setDirectoryUrl(urls.first());
+    fileDialog.exec();
+    file = fileDialog.selectedUrls();
+
+    QImage image(file.first().path());
+    image = NativeProcessor(this->image).imageDifference(image);
+    QString format = tr("test");
+    emit newImage(image, format);
+}
+
 void imageWidget::mousePressEvent(QMouseEvent *eventPress)
 {
     if (eventPress->button() == Qt::LeftButton)
@@ -72,20 +223,16 @@ void imageWidget::mouseReleaseEvent(QMouseEvent *eventRelease)
 
 void imageWidget::mouseMoveEvent(QMouseEvent *eventMove)
 {
-    qDebug() << eventMove->pos();
     QPoint mousePos = eventMove->pos();
-    auto item = this->items().first();
-    auto itemPos = item->pos();
-    auto rect = item->sceneBoundingRect().toRect();
-    qreal px = itemPos.rx();
-    qreal py = itemPos.ry();
-    rect = rect.adjusted(px, py, px, py);
-    if (rect.contains(mousePos))
+    QPoint scenePos = mapToScene(mousePos).toPoint();
+    QPoint imagePos = imagePixItem->mapFromScene(scenePos).toPoint();
+    //QPoint imagePos = scene->
+
+    auto rect = items().first()->sceneBoundingRect().toRect();
+    if (rect.contains(imagePos))
     {
-        mousePos += itemPos.toPoint();
-        qDebug() << mousePos;
-        qDebug() << this->pos();
-        emit mouseMoved(mousePos);
+        emit mouseMoved(imagePos);
     }
+    qDebug() << mousePos << scenePos;
 
 }

@@ -63,6 +63,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
 
     ui->setupUi(this);
+    ui->tabWidget->setTabsClosable(true);
+    ui->tabWidget->setTabBarAutoHide(true);
+    connect(ui->tabWidget, &QTabWidget::tabCloseRequested, this, &MainWindow::closeTab);
 }
 
 MainWindow::~MainWindow()
@@ -109,7 +112,12 @@ void MainWindow::on_actionOpen_File_triggered()
 
 void MainWindow::receieveImage(QImage &image, QString& format)
 {
-   createTab(image, format, tr("prueba"));
+    createTab(image, format, tr("prueba"));
+}
+
+void MainWindow::closeTab(int index)
+{
+    this->ui->tabWidget->removeTab(index);
 }
 
 void MainWindow::createTab(QImage &image, QString format, QString title)

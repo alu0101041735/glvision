@@ -40,7 +40,7 @@ void imagePanel::setHistrogram(QImage& image)
     series->append(barSet);
     QChart* chart = new QChart();
     chart->addSeries(series);
-    chart->setTitle("Histogram");
+    //chart->setTitle("Histogram");
     chart->setAnimationOptions(QChart::SeriesAnimations);
     //QChartView* view = new QChartView(chart, this->ui->histogramChart);
     chart->resize(this->ui->graphicsView->size());

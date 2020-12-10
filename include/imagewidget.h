@@ -7,6 +7,7 @@
 #include <QGraphicsPixmapItem>
 #include <QPoint>
 #include <QMouseEvent>
+#include "nativeprocessor.h"
 
 class imageWidget : public QGraphicsView
 {
@@ -21,10 +22,23 @@ private:
     QGraphicsScene* scene;
     QGraphicsPixmapItem* imagePixItem;
     QImage image;
+    NativeProcessor* processor;
+
 
 public slots:
    void ShowContextMenu(const QPoint &);
+
    void toGrayscale(bool);
+   void linTransform();
+   void adjustBrightnes();
+   void adjustContrast();
+   void equalizeHistogram();
+   void specifyHistogram();
+   void gammaCorrection();
+   void imgCrossSection();
+   void digitalization();
+   void imageDifference();
+
    void mousePressEvent(QMouseEvent* eventPress);
    void mouseReleaseEvent(QMouseEvent* eventRelease);
    void mouseMoveEvent(QMouseEvent* eventMove);

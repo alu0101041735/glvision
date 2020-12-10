@@ -23,6 +23,7 @@ private slots:
     void on_actionOpen_File_triggered();
 public slots:
     void receieveImage(QImage &image, QString& format);
+    void closeTab(int index);
 
 private:
     Ui::MainWindow *ui;
