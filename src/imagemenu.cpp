@@ -17,6 +17,7 @@ void imageMenu::buildMenu(imageWidget* parent)
     QAction* equalizeHistogram = new QAction(tr("Equalize histogram"), this->parent());
     QAction* specifyHistogram = new QAction(tr("Specify histogram"), this->parent());
     QAction* gammaCorrection = new QAction(tr("Gamma correction"), this->parent());
+    QAction* imageDifference = new QAction(tr("Image difference"), this->parent());
 
     //Connections
     connect(toGray, &QAction::triggered, parent, &imageWidget::toGrayscale);
@@ -26,6 +27,7 @@ void imageMenu::buildMenu(imageWidget* parent)
     connect(equalizeHistogram, &QAction::triggered, parent, &imageWidget::equalizeHistogram);
     connect(specifyHistogram, &QAction::triggered, parent, &imageWidget::specifyHistogram);
     connect(gammaCorrection, &QAction::triggered, parent, &imageWidget::gammaCorrection);
+    connect(imageDifference, &QAction::triggered, parent, &imageWidget::imageDifference);
 
 
     addAction(toGray);
@@ -35,6 +37,7 @@ void imageMenu::buildMenu(imageWidget* parent)
     addAction(equalizeHistogram);
     addAction(specifyHistogram);
     addAction(gammaCorrection);
+    addAction(imageDifference);
 
 
 }
