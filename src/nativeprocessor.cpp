@@ -205,7 +205,6 @@ NativeProcessor::NativeProcessor(QImage image): m_image(image)
     if (m_image.allGray()) {
         m_grayimage = m_image;
         m_isgrayscale = true;
-        std::cout << "is gray\n";
     }
     else {
         toGrayScale();
@@ -359,11 +358,10 @@ int NativeProcessor::contrast()
 QImage NativeProcessor::processStretch(std::vector<std::pair<int, int>> table)
 {
 
-    std::pair<int, int> fullstretch[256];
+    std::vector<std::pair<int, int>> fullstretch;
 
-    int size = sizeof(&table)/sizeof(std::pair<int, int>);
 
-    for (int i = 1; i < size; i++) {
+    for (uint16_t i = 1; i < table.size(); i++) {
         std::pair<int, int> start = table[i-1];
         std::pair<int, int> end = table[i];
 
@@ -378,14 +376,9 @@ QImage NativeProcessor::processStretch(std::vector<std::pair<int, int>> table)
 
         //std::copy(aux, aux+aux_size, fullstretch[start.first]);
         int w = 0;
-        for (int i = start.first; i < end.first; i++) {
-            fullstretch[i].first = aux[w].first;
-            fullstretch[i].second = aux[w].second;
-            w++;
-        }
+        fullstretch.insert(fullstretch.end(), aux.begin(), aux.end());
     }
 
-    size = sizeof(fullstretch)/sizeof(std::pair<int, int>);
 
     QColor updater;
 
