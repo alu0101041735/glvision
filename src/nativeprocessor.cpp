@@ -194,11 +194,7 @@ NativeProcessor::NativeProcessor(QImage image): m_image(image)
     m_width = image.width();
     m_height = image.height();
 
-    m_start.first = 0;
-    m_start.second = 0;
-
-    m_end.first = m_width;
-    m_end.second = m_height;
+    resetZone();
 
     new(&m_rimage) QImage(m_width, m_height, QImage::Format_RGBA64);
 
@@ -225,10 +221,8 @@ NativeProcessor::NativeProcessor(QImage image, bool grayscale)
     m_width = image.width();
     m_height = image.height();
 
-    m_start.first = 0;
-    m_start.second = 0;
 
-    new(&m_rimage) QImage(m_width, m_height, QImage::Format_RGBA64);
+    resetZone();
 
     if (grayscale == true) {
         m_grayimage = image;
@@ -292,16 +286,17 @@ int NativeProcessor::getHeight()
 
 QImage NativeProcessor::getGrayScale()
 {
-    return m_grayimage;
+    return m_grayimage.copy(m_start.first, m_start.second, m_end.first, m_end.second);
 }
 
 QImage NativeProcessor::getResultImage()
 {
-    return m_rimage;
+    return m_rimage.copy(m_start.first, m_start.second, m_end.first, m_end.second);
 }
 
 QImage NativeProcessor::getOriginalImage()
 {
+    m_image = m_image.copy(m_start.first, m_start.second, m_end.first, m_end.second);
     return m_image;
 }
 
@@ -393,7 +388,9 @@ QImage NativeProcessor::processStretch(std::vector<std::pair<int, int>> table)
             m_rimage.setPixelColor(x, y, updater);
         }
     }
-    return m_rimage;
+
+    
+    return m_rimage.copy(m_start.first, m_start.second, m_end.first, m_end.second);
 }
 
 QImage NativeProcessor::imageDifference(QImage image)
@@ -413,7 +410,8 @@ QImage NativeProcessor::imageDifference(QImage image)
             }
         }
     }
-    return m_rimage;
+
+    return m_rimage.copy(m_start.first, m_start.second, m_end.first, m_end.second);
 }
 
 QImage NativeProcessor::modifyBrightness(float br)
@@ -454,7 +452,8 @@ QImage NativeProcessor::modifyBrightness(float br)
             m_rimage.setPixelColor(x, y, newcolor);
         }
     }
-    return m_rimage;
+
+    return m_rimage.copy(m_start.first, m_start.second, m_end.first, m_end.second);
 }
 
 QImage NativeProcessor::modifyContrast(float c)
@@ -474,6 +473,7 @@ QImage NativeProcessor::modifyContrast(float c)
 
     QColor newcolor;
 
+    qDebug() << "INICIA\n\n";
     for (int y = m_start.second; y < m_end.second; y++) {
         for (int x = m_start.first; x < m_end.first; x++) {
                 red = m_image.pixelColor(x, y).red();
@@ -499,7 +499,9 @@ QImage NativeProcessor::modifyContrast(float c)
 
             }
         }
-        return m_rimage;
+    QImage rimage = m_rimage.copy(m_start.first, m_start.second, m_end.first, m_end.second);
+
+    return  rimage;
 }
 
 QImage NativeProcessor::gammaCorrection(float gamma)
@@ -536,7 +538,7 @@ QImage NativeProcessor::gammaCorrection(float gamma)
         }
     }
 
-    return m_rimage;
+    return m_rimage.copy(m_start.first, m_start.second, m_end.first, m_end.second);
 }
 
 QImage NativeProcessor::gammaCorrectionGray(float gamma)
@@ -560,7 +562,7 @@ QImage NativeProcessor::gammaCorrectionGray(float gamma)
         }
     }
 
-    return m_rimage;
+    return m_rimage.copy(m_start.first, m_start.second, m_end.first, m_end.second);
 }
 
 QImage NativeProcessor::equalizeHistogram()
@@ -575,9 +577,6 @@ QImage NativeProcessor::equalizeHistogram()
         float height = m_height;
         aux = m_cumulativehistogram[j] * (255/(width*height));
         aux = round(aux);
-
-
-        std::cout << aux << "\n";
 
         if (aux < 0)
             tul[i] = 0;
@@ -598,7 +597,7 @@ QImage NativeProcessor::equalizeHistogram()
         }
     }
 
-    return m_rimage;
+    return m_rimage.copy(m_start.first, m_start.second, m_end.first, m_end.second);
 }
 
 QImage NativeProcessor::specifyHistogram(std::vector<double> otherhistogram)
@@ -626,8 +625,8 @@ QImage NativeProcessor::specifyHistogram(std::vector<double> otherhistogram)
             m_rimage.setPixelColor(x, y, color);
         }
     }
-    return m_rimage;
 
+    return m_rimage.copy(m_start.first, m_start.second, m_end.first, m_end.second);
 }
 
 void NativeProcessor::updateImageInfo()
@@ -667,6 +666,9 @@ void NativeProcessor::setZone(std::pair<int, int> start, std::pair<int, int> end
 {
    m_start = start;
    m_end = end;
+   new(&m_rimage) QImage(m_width, m_height, QImage::Format_RGBA64);
+
+   updateImageInfo();
 }
 
 void NativeProcessor::resetZone()
@@ -676,4 +678,6 @@ void NativeProcessor::resetZone()
 
    m_end.first = m_width;
    m_end.second = m_height;
+
+    new(&m_rimage) QImage(m_width, m_height, QImage::Format_RGBA64);
 }
