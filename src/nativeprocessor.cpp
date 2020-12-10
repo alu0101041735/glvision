@@ -413,7 +413,7 @@ QImage NativeProcessor::modifyBrightness(float br)
     return m_rimage;
 }
 
-QImage NativeProcessor::modifyContrast(int c)
+QImage NativeProcessor::modifyContrast(float c)
 {
     if ( c > 255)
         c = 255;
@@ -425,7 +425,9 @@ QImage NativeProcessor::modifyContrast(int c)
     int new_red;
     int new_green;
     int new_blue;
+
     float fcf = (259*(c + 255))/(255*(259 - c));
+    std::cout << "\n\n\n" << fcf << "\n\n\n";
 
     QColor newcolor;
 
@@ -451,6 +453,19 @@ QImage NativeProcessor::modifyContrast(int c)
                 newcolor.setRgb(new_red, new_green, new_blue);
 
                 m_rimage.setPixelColor(x, y, newcolor);
+
+                if ((y == 500) && (x == 1000)) {
+                    std::cout << "original colors: " <<
+                                 "red: " << red <<
+                                 " green: " << green <<
+                                 " blue: " << blue <<
+                                 "\nNew colors: " <<
+                                 "red: " << new_red <<
+                                 " green: " << new_green <<
+                                 " blue: " << new_blue <<
+                                 "\nContrast: " << fcf << "\n";
+
+                }
             }
         }
         return m_rimage;

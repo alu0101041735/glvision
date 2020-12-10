@@ -94,6 +94,40 @@ void MainWindow::on_actionOpen_File_triggered()
     }  catch (std::exception& e) {
         qDebug() << "test";
     }
+
+    fileUrl = fileUrl.adjusted(QUrl::StripTrailingSlash);
+    createTab(images.first(), fileUrl.fileName());
+    /*
+    imageTab* newTab = new imageTab(images.first(), ui->tabWidget);
+    ui->tabWidget->addTab( newTab, urls.first().toString());
+    newTab->connectImageReturn(this);
+    auto index = ui->tabWidget->currentIndex();
+    */
+
+    //this->ui->tabWidget->insertTab(this);
+    //tabs.append()
+    //this->ui->tabWidget->currentIndex();
+    //tabs.append(new imageTab(this->ui->tab_2));
+
+    //Histogrem branch
+    
+
+
+    /*
+    clHandler image(images[0]);
+    image.clKernelSetup(GRAYSCALE);
+    image.runKernel();
+
+    QImage result = image.getImage();
+
+    */
+
+    NativeProcessor np(images[0]);
+    QImage original = np.getOriginalImage();
+    QImage result = np.modifyContrast(-100);
+    original.save("../glvision/images/original.png");
+    result.save("../glvision/images/result_contrast.png");
+
 }
 
 void MainWindow::receieveImage(QImage &image, QString& format)

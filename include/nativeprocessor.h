@@ -88,7 +88,7 @@ public:
     QImage processStretch(std::pair<int, int> *table);
     QImage imageDifference(QImage image);
     QImage modifyBrightness(float br);
-    QImage modifyContrast(int c);
+    QImage modifyContrast(float c);
     QImage gammaCorrection(float gamma);
 
     void updateImageInfo();
