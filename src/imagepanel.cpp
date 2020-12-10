@@ -27,7 +27,7 @@ void imagePanel::updateInfo(imageInfo &info)
 
 void imagePanel::setHistrogram(QImage& image)
 {
-    std::vector<uint32_t> histogram = NativeProcessor(image, true).getHistogram();
+    std::vector<uint32_t> histogram = NativeProcessor(image).getHistogram();
     QBarSet* barSet = new QBarSet("histogram");
     for (auto value : histogram) {
         *barSet << value;
