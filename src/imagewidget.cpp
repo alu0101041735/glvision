@@ -54,8 +54,11 @@ void imageWidget::ShowContextMenu(const QPoint &pos)
 
 void imageWidget::toGrayscale(bool)
 {
+    if (processor == nullptr) {
+       processor = new NativeProcessor(this->image);
+    }
     qDebug() << "to grayscale";
-    QImage grayImage = NativeProcessor(this->image).getGrayScale();
+    QImage grayImage = processor->getGrayScale();
     QString fileType = tr("test");
     emit newImage(grayImage, fileType);
 
@@ -63,6 +66,9 @@ void imageWidget::toGrayscale(bool)
 
 void imageWidget::linTransform()
 {
+    if (processor == nullptr) {
+       processor = new NativeProcessor(this->image);
+    }
     bool* ok = new bool(false);
     int numPoints = QInputDialog::getInt(this, tr("How many points"),
                                          tr(""), 0, 0, 20, 1,ok
@@ -89,7 +95,7 @@ void imageWidget::linTransform()
                                 ));
         }
 
-        QImage nImage = NativeProcessor(this->image).processStretch(result);
+        QImage nImage = processor->processStretch(result);
         QString fileType = tr("test");
         emit newImage(nImage, fileType);
     }
@@ -97,6 +103,9 @@ void imageWidget::linTransform()
 
 void imageWidget::adjustBrightnes()
 {
+    if (processor == nullptr) {
+       processor = new NativeProcessor(this->image);
+    }
     bool* ok = new bool(false);
     float multiplier;
     multiplier = QInputDialog::getDouble(this, tr("Brightness"),
@@ -104,7 +113,7 @@ void imageWidget::adjustBrightnes()
                                          2, ok, Qt::WindowFlags(), 0.01
                                          );
     if (*ok) {
-        QImage image = NativeProcessor(this->image).modifyBrightness(multiplier);
+        QImage image = processor->modifyBrightness(multiplier);
         QString Filetype = tr("test");
         emit newImage(image, Filetype);
     }
@@ -112,6 +121,9 @@ void imageWidget::adjustBrightnes()
 
 void imageWidget::adjustContrast()
 {
+    if (processor == nullptr) {
+       processor = new NativeProcessor(this->image);
+    }
     bool* ok = new bool(false);
     int newContrast;
     newContrast = QInputDialog::getInt(this, tr("Contrast"),
@@ -119,7 +131,7 @@ void imageWidget::adjustContrast()
                                          1, ok, Qt::WindowFlags()
                                          );
     if (*ok) {
-        QImage image = NativeProcessor(this->image).modifyContrast(newContrast);
+        QImage image = processor->modifyContrast(newContrast);
         QString Filetype = tr("test");
         emit newImage(image, Filetype);
     }
@@ -128,8 +140,11 @@ void imageWidget::adjustContrast()
 
 void imageWidget::equalizeHistogram()
 {
+    if (processor == nullptr) {
+       processor = new NativeProcessor(this->image);
+    }
 
-    QImage nImage = NativeProcessor(image).equalizeHistogram();
+    QImage nImage = processor->equalizeHistogram();
     QString format = tr("test");
     emit newImage(nImage, format);
 
@@ -137,6 +152,9 @@ void imageWidget::equalizeHistogram()
 
 void imageWidget::specifyHistogram()
 {
+    if (processor == nullptr) {
+       processor = new NativeProcessor(this->image);
+    }
     QUrl fileUrl;
     QList<QUrl> urls;
     QList<QUrl> file;
@@ -155,7 +173,7 @@ void imageWidget::specifyHistogram()
     file = fileDialog.selectedUrls();
 
     QImage image(file.first().path());
-    auto histogram = NativeProcessor(image).getNormalizedCumulativeHistogram();
+    auto histogram = processor->getNormalizedCumulativeHistogram();
     image = NativeProcessor(this->image).specifyHistogram(histogram);
     QString format = tr("test");
     emit newImage(image, format);
@@ -163,6 +181,9 @@ void imageWidget::specifyHistogram()
 
 void imageWidget::gammaCorrection()
 {
+    if (processor == nullptr) {
+       processor = new NativeProcessor(this->image);
+    }
     bool* ok = new bool(false);
     float multiplier;
     multiplier = QInputDialog::getDouble(this, tr("Gamma"),
@@ -170,7 +191,7 @@ void imageWidget::gammaCorrection()
                                          2, ok, Qt::WindowFlags(), 0.01
                                          );
     if (*ok) {
-        QImage image = NativeProcessor(this->image).gammaCorrection(multiplier);
+        QImage image = processor->gammaCorrection(multiplier);
         QString Filetype = tr("test");
         emit newImage(image, Filetype);
     }
@@ -179,16 +200,25 @@ void imageWidget::gammaCorrection()
 
 void imageWidget::imgCrossSection()
 {
+    if (processor == nullptr) {
+       processor = new NativeProcessor(this->image);
+    }
 
 }
 
 void imageWidget::digitalization()
 {
+    if (processor == nullptr) {
+       processor = new NativeProcessor(this->image);
+    }
 
 }
 
 void imageWidget::imageDifference()
 {
+    if (processor == nullptr) {
+       processor = new NativeProcessor(this->image);
+    }
     QUrl fileUrl;
     QList<QUrl> urls;
     QList<QUrl> file;
@@ -207,7 +237,7 @@ void imageWidget::imageDifference()
     file = fileDialog.selectedUrls();
 
     QImage image(file.first().path());
-    image = NativeProcessor(this->image).imageDifference(image);
+    image = processor->imageDifference(image);
     QString format = tr("test");
     emit newImage(image, format);
 }
@@ -216,13 +246,37 @@ void imageWidget::mousePressEvent(QMouseEvent *eventPress)
 {
     if (eventPress->button() == Qt::LeftButton)
     {
-        qDebug() << tr("Left mouse press event");
-        qDebug() << eventPress->pos();
+        QPoint scenePos = mapToScene(eventPress->pos()).toPoint();
+        QPoint imagePos = imagePixItem->mapFromScene(scenePos).toPoint();
+        pressEventPos = imagePos;
     }
 }
 
 void imageWidget::mouseReleaseEvent(QMouseEvent *eventRelease)
 {
+    if (eventRelease->button() == Qt::LeftButton)
+    {
+        QPoint scenePos = mapToScene(eventRelease->pos()).toPoint();
+        QPoint imagePos = imagePixItem->mapFromScene(scenePos).toPoint();
+        releaseEventPos = imagePos;
+
+        if (!pressEventPos.isNull())
+        {
+            std::pair<int, int> origin;
+            std::pair<int, int> end;
+            origin = std::make_pair(
+                        pressEventPos.x(),
+                        pressEventPos.y()
+                        );
+            end = std::make_pair(
+                        releaseEventPos.x(),
+                        releaseEventPos.y()
+                        );
+            processor->setZone(origin, end);
+            qDebug() << pressEventPos << releaseEventPos;
+
+        }
+    }
 
 }
 
@@ -241,6 +295,4 @@ void imageWidget::mouseMoveEvent(QMouseEvent *eventMove)
     {
         emit mouseMoved(imagePos, value);
     }
-    qDebug() << mousePos << scenePos;
-
 }
