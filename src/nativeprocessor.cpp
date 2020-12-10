@@ -10,8 +10,8 @@ void  NativeProcessor::toGrayScale()
 
     new(&m_grayimage) QImage(m_width, m_height, QImage::Format_RGBA64);
 
-   for (int y = 0; y < m_height; y++){
-       for (int x = 0; x < m_width; x++) {
+   for (int y = m_start.second; y < m_end.second; y++){
+       for (int x = m_start.first; x < m_end.first; x++) {
            red = m_image.pixelColor(x, y).red();
            green = m_image.pixelColor(x, y).green();
            blue = m_image.pixelColor(x, y).blue();
@@ -39,8 +39,8 @@ void NativeProcessor::computeHistogram()
 
     int gray_level;
 
-    for (int y = 0; y < m_height; y++) {
-        for (int x = 0; x < m_width; x++) {
+    for (int y = m_start.second; y < m_end.second; y++) {
+        for (int x = m_start.first; x < m_end.first; x++) {
             gray_level = m_grayimage.pixelColor(x, y).red();
 
             m_histogram[gray_level] += 1;
@@ -103,8 +103,8 @@ void NativeProcessor::computeValueRange()
     range.first = m_grayimage.pixelColor(0,0).red();
     range.second = m_grayimage.pixelColor(0,0).red();
 
-    for (int y = 0; y < m_height; y++) {
-        for (int x = 0; x < m_width; x++) {
+    for (int y = m_start.second; y < m_end.second; y++) {
+        for (int x = m_start.first; x < m_end.first; x++) {
             if (m_grayimage.pixelColor(x, y).red() < range.first)
                range.first = m_grayimage.pixelColor(x,y).red();
             if (m_grayimage.pixelColor(x, y).red() > range.second)
@@ -191,6 +191,12 @@ NativeProcessor::NativeProcessor(QImage image): m_image(image)
     m_width = image.width();
     m_height = image.height();
 
+    m_start.first = 0;
+    m_start.second = 0;
+
+    m_end.first = m_width;
+    m_end.second = m_height;
+
     new(&m_rimage) QImage(m_width, m_height, QImage::Format_RGBA64);
 
     if (m_image.allGray()) {
@@ -215,6 +221,9 @@ NativeProcessor::NativeProcessor(QImage image, bool grayscale)
 {
     m_width = image.width();
     m_height = image.height();
+
+    m_start.first = 0;
+    m_start.second = 0;
 
     new(&m_rimage) QImage(m_width, m_height, QImage::Format_RGBA64);
 
@@ -376,8 +385,8 @@ QImage NativeProcessor::processStretch(std::vector<std::pair<int, int>> table)
 
     QColor updater;
 
-    for (int y = 0; y < m_height; y++) {
-        for (int x = 0; x < m_width; x++) {
+    for (int y = m_start.second; y < m_end.second; y++) {
+        for (int x = m_start.first; x < m_end.first; x++) {
             int color = m_grayimage.pixelColor(x, y).red();
 
             updater.setRgb(fullstretch[color].second,
@@ -399,8 +408,8 @@ QImage NativeProcessor::imageDifference(QImage image)
     }
     else {
         QColor colordiff;
-        for (int y = 0; y < m_height; y++) {
-            for (int x = 0; x < m_width; x++) {
+    for (int y = m_start.second; y < m_end.second; y++) {
+        for (int x = m_start.first; x < m_end.first; x++) {
                 int diff = abs(second.grayLevel(x,y).second - m_grayimage.pixelColor(x,y).red());
                 colordiff.setRgb(diff, diff, diff);
                 m_rimage.setPixelColor(x, y, colordiff);
@@ -424,8 +433,8 @@ QImage NativeProcessor::modifyBrightness(float br)
     int new_green;
     int new_blue;
 
-    for (int y = 0; y < m_height; y++) {
-        for (int x = 0; x < m_width; x++) {
+    for (int y = m_start.second; y < m_end.second; y++) {
+        for (int x = m_start.first; x < m_end.first; x++) {
             red = m_image.pixelColor(x, y).red();
             green = m_image.pixelColor(x, y).green();
             blue = m_image.pixelColor(x, y).blue();
@@ -468,8 +477,8 @@ QImage NativeProcessor::modifyContrast(float c)
 
     QColor newcolor;
 
-        for (int y = 0; y < m_height; y++) {
-            for (int x = 0; x < m_width; x++) {
+    for (int y = m_start.second; y < m_end.second; y++) {
+        for (int x = m_start.first; x < m_end.first; x++) {
                 red = m_image.pixelColor(x, y).red();
                 green = m_image.pixelColor(x, y).green();
                 blue = m_image.pixelColor(x, y).blue();
@@ -510,8 +519,8 @@ QImage NativeProcessor::gammaCorrection(float gamma)
 
     QColor result;
 
-    for (int y = 0; y < m_height; y++) {
-        for (int x  = 0; x < m_width; x++) {
+    for (int y = m_start.second; y < m_end.second; y++) {
+        for (int x = m_start.first; x < m_end.first; x++) {
             red = m_image.pixelColor(x,y).red();
             green = m_image.pixelColor(x,y).green();
             blue = m_image.pixelColor(x,y).blue();
@@ -542,8 +551,8 @@ QImage NativeProcessor::gammaCorrectionGray(float gamma)
 
     QColor result;
 
-    for (int y = 0; y < m_height; y++) {
-        for (int x  = 0; x < m_width; x++) {
+    for (int y = m_start.second; y < m_end.second; y++) {
+        for (int x = m_start.first; x < m_end.first; x++) {
             gray = m_grayimage.pixelColor(x,y).red();
             normalized_value = gray/255;
             b = pow(normalized_value, gamma);
@@ -579,8 +588,8 @@ QImage NativeProcessor::equalizeHistogram()
     QColor color;
     int gray;
 
-    for (int y = 0; y < m_height; y++) {
-        for (int x = 0; x < m_width; x++) {
+    for (int y = m_start.second; y < m_end.second; y++) {
+        for (int x = m_start.first; x < m_end.first; x++) {
             gray = m_grayimage.pixelColor(x, y).red();
 
             color.setRgb(tul[gray], tul[gray], tul[gray]);
@@ -608,8 +617,8 @@ QImage NativeProcessor::specifyHistogram(std::vector<double> otherhistogram)
     int gray;
     QColor color;
 
-    for (int y = 0; y < m_height; y++) {
-        for (int x = 0; x < m_width; x++) {
+    for (int y = m_start.second; y < m_end.second; y++) {
+        for (int x = m_start.first; x < m_end.first; x++) {
             gray = m_grayimage.pixelColor(x, y).red();
 
             color.setRgb(tul[gray], tul[gray], tul[gray]);
@@ -652,4 +661,19 @@ void NativeProcessor::setResultImageasOriginal()
         m_image = NativeProcessor(m_rimage, true).getOriginalImage();
     else
         m_image = NativeProcessor(m_rimage).getOriginalImage();
+}
+
+void NativeProcessor::setZone(std::pair<int, int> start, std::pair<int, int> end)
+{
+   m_start = start;
+   m_end = end;
+}
+
+void NativeProcessor::resetZone(std::pair<int, int> start, std::pair<int, int> end)
+{
+   m_start.first = 0;
+   m_start.second = 0;
+
+   m_end.first = m_width;
+   m_end.second = m_height;
 }

@@ -43,6 +43,9 @@ private:
     int m_width;
     int m_height;
 
+    std::pair<int, int> m_start;
+    std::pair<int, int> m_end;
+
     std::vector<uint32_t> m_histogram;
     std::vector<uint32_t> m_cumulativehistogram;
     std::vector<double> m_normalizedhistogram;
@@ -105,6 +108,8 @@ public:
     void setResultImageasGray();
     void setGrayImageasOriginal();
     void setResultImageasOriginal();
+    void setZone(std::pair<int, int> start, std::pair<int, int> end);
+    void resetZone(std::pair<int, int> start, std::pair<int, int> end);
 
 };
 
