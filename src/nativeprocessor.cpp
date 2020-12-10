@@ -202,6 +202,7 @@ NativeProcessor::NativeProcessor(QImage image): m_image(image)
     if (m_image.allGray()) {
         m_grayimage = m_image;
         m_isgrayscale = true;
+        std::cout << "is gray\n";
     }
     else {
         toGrayScale();
@@ -669,7 +670,7 @@ void NativeProcessor::setZone(std::pair<int, int> start, std::pair<int, int> end
    m_end = end;
 }
 
-void NativeProcessor::resetZone(std::pair<int, int> start, std::pair<int, int> end)
+void NativeProcessor::resetZone()
 {
    m_start.first = 0;
    m_start.second = 0;

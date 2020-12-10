@@ -109,7 +109,7 @@ public:
     void setGrayImageasOriginal();
     void setResultImageasOriginal();
     void setZone(std::pair<int, int> start, std::pair<int, int> end);
-    void resetZone(std::pair<int, int> start, std::pair<int, int> end);
+    void resetZone();
 
 };
 
