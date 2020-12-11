@@ -22,6 +22,12 @@ void imagePanel::updateInfo(imageInfo &info)
     this->ui->entropy->setText(
                 QString::number(info.getEntropy())
                 );
+    this->ui->lumRangeMin->setText(
+                QString::number(info.getRange().first)
+                );
+    this->ui->lumRangeMax->setText(
+                QString::number(info.getRange().second)
+                );
 
 }
 
@@ -40,17 +46,15 @@ void imagePanel::setHistrogram(QImage& image)
     series->append(barSet);
     QChart* chart = new QChart();
     chart->addSeries(series);
-    //chart->setTitle("Histogram");
     chart->setAnimationOptions(QChart::SeriesAnimations);
-    //QChartView* view = new QChartView(chart, this->ui->histogramChart);
     chart->resize(this->ui->graphicsView->size());
     this->ui->graphicsView->setChart(chart);
     this->ui->graphicsView->setRenderHint(QPainter::Antialiasing);
-    //this->ui->graphicsView->fitInView(chart->boundingRect(), Qt::KeepAspectRatio);
 }
 
 void imagePanel::updateMousePos(QPoint &pos, int value)
 {
-    QString posString = QString("Current pos: %1, %2 value: %3").arg(pos.x()).arg(pos.y()).arg(value);
-    ui->mousePos->setText(posString);
+    ui->posX->setText(QString::number(pos.x()));
+    ui->posY->setText(QString::number(pos.y()));
+    ui->luminosity->setText(QString::number(value));
 }

@@ -5,7 +5,7 @@
 #include <QPair>
 #include <QImage>
 
-typedef QPair<unsigned, unsigned> pair;
+typedef std::pair<unsigned, unsigned> pair;
 
 class imageInfo
 {
