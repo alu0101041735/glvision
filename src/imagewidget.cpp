@@ -173,8 +173,8 @@ void imageWidget::specifyHistogram()
     file = fileDialog.selectedUrls();
 
     QImage image(file.first().path());
-    auto histogram = processor->getNormalizedCumulativeHistogram();
-    image = NativeProcessor(this->image).specifyHistogram(histogram);
+    auto histogram = NativeProcessor(image).getNormalizedCumulativeHistogram();
+    image = processor->specifyHistogram(histogram);
     QString format = tr("test");
     emit newImage(image, format);
 }
