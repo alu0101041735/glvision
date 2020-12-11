@@ -45,6 +45,7 @@ private:
 
     std::pair<int, int> m_start;
     std::pair<int, int> m_end;
+    QRect m_rect;
 
     std::vector<uint32_t> m_histogram;
     std::vector<uint32_t> m_cumulativehistogram;
