@@ -105,6 +105,12 @@ void MainWindow::on_actionOpen_File_triggered()
         qDebug() << "test";
     }
 
+    NativeProcessor np(images[0]);
+    QImage test2("../glvision/images/kuvshi.jpg");
+    NativeProcessor np2(test2);
+    std::vector<double> temp_histogram = np2.getNormalizedCumulativeHistogram();
+
+    np.specifyHistogram(temp_histogram).save("../glvision/images/specification_test.png");
 }
 
 void MainWindow::receieveImage(QImage &image, QString& format)
