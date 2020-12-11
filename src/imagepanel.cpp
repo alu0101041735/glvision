@@ -37,7 +37,6 @@ void imagePanel::setHistrogram(QImage& image)
     QBarSet* barSet = new QBarSet("histogram");
     for (auto value : histogram) {
         *barSet << value;
-        //qDebug() << value;
     }
 
     QPen pen(Qt::black, 5);

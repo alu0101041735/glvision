@@ -27,7 +27,6 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
-    //Helper helper;
     QMap<uint, imageTab*> tabs;
     void createTab(QImage& image, QString format, QString title);
 };

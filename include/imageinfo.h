@@ -2,7 +2,6 @@
 #define IMAGEINFO_H
 
 #include <QString>
-#include <QPair>
 #include <QImage>
 
 typedef std::pair<unsigned, unsigned> pair;

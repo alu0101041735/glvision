@@ -57,7 +57,6 @@ void imageWidget::toGrayscale(bool)
     if (processor == nullptr) {
        processor = new NativeProcessor(this->image);
     }
-    qDebug() << "to grayscale";
     QImage grayImage = processor->getGrayScale();
     QString fileType = tr("test");
     emit newImage(grayImage, fileType);
@@ -273,8 +272,6 @@ void imageWidget::mouseReleaseEvent(QMouseEvent *eventRelease)
                         releaseEventPos.y()
                         );
             processor->setZone(origin, end);
-            qDebug() << pressEventPos << releaseEventPos;
-
         }
     }
 

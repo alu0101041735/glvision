@@ -102,7 +102,6 @@ void MainWindow::on_actionOpen_File_triggered()
         QFileInfo info(files.first().path());
         createTab(images.first(), info.completeSuffix(), files.first().fileName());
     }  catch (std::exception& e) {
-        qDebug() << "test";
     }
 
 }
@@ -122,8 +121,6 @@ void MainWindow::createTab(QImage &image, QString format, QString title)
     imageTab* newTab = new imageTab(image, format, ui->tabWidget);
     ui->tabWidget->addTab( newTab, title);
     newTab->connectImageReturn(this);
-    //auto index = ui->tabWidget->currentIndex();
-
 }
 
 

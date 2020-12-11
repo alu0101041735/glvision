@@ -23,10 +23,6 @@ public:
 private:
     Ui::imageTab *ui;
 
-    /*
-public slots:
-    void receieveImage(QImage& image);
-    */
 };
 
 #endif // IMAGETAB_H
