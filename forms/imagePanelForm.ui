@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>329</width>
-    <height>582</height>
+    <height>614</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -120,28 +120,53 @@
     </layout>
    </item>
    <item>
-    <widget class="QLineEdit" name="mousePos">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>100</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Mouse pos</string>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <widget class="QLabel" name="lumRangeLabel">
+       <property name="text">
+        <string>Luminosity range</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lumRangeMin"/>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lumRangeMax"/>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_7">
+     <item>
+      <widget class="QLabel" name="positionLabel">
+       <property name="text">
+        <string>Position</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="posX"/>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="posY"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="LuminosityLabel">
+       <property name="text">
+        <string>Luminosity</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="luminosity"/>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QChartView" name="graphicsView">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>

@@ -18,7 +18,7 @@ imageTab::imageTab(QImage &image, QString& format, QWidget *parent) :
     pair dimensions(imagePr.getHeight(), imagePr.getWidth());
     imageInfo info(format,
                    dimensions,
-                   pair(0, 0),
+                   imagePr.valueRange(),
                    imagePr.brightness(),
                    imagePr.contrast(),
                    imagePr.getEntropy()
