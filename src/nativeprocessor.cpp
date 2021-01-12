@@ -157,10 +157,14 @@ void NativeProcessor::computeContrast()
 
     for (unsigned long i = 0; i < m_histogram.size(); i++) {
 
+        long double aux = m_histogram[i]*abs(pow(i - m_brightness, 2));
+        sum += aux;
+        /*
         for (unsigned long int j = 0; j < m_histogram[i]; j++) {
             long double aux = abs(pow(i - m_brightness, 2));
             sum += aux;
         }
+        */
     }
 
     m_contrast = sqrt(sum / (m_width*m_height));
@@ -187,6 +191,22 @@ std::vector<std::pair<int, int>> NativeProcessor::computeFullStretch(std::pair<i
     }
 
     return result;
+}
+
+void NativeProcessor::createLUT(bool sum, float factor, int size)
+{
+    new (&m_lut) std::vector<int>(size);
+
+    if (sum) {
+        for (int i = 0; i < size; i++) {
+            m_lut[i] = (float)i + factor;
+        }
+    }
+    else {
+        for (int i = 0; i < size; i++) {
+            m_lut[i] = factor * ((float)i - 128) + 128;
+        }
+    }
 }
 
 NativeProcessor::NativeProcessor(QImage image): m_image(image)
@@ -426,15 +446,18 @@ QImage NativeProcessor::modifyBrightness(float br)
     int new_green;
     int new_blue;
 
+    float B = (float)br - (float)m_brightness;
+    createLUT(true, B, m_histogram.size());
+
     for (int y = m_start.second; y < m_end.second; y++) {
         for (int x = m_start.first; x < m_end.first; x++) {
             red = m_image.pixelColor(x, y).red();
             green = m_image.pixelColor(x, y).green();
             blue = m_image.pixelColor(x, y).blue();
 
-            new_red = red * br;
-            new_green = green * br;
-            new_blue = blue * br;
+            new_red = m_lut[red];
+            new_green = m_lut[green];
+            new_blue = m_lut[blue];
 
             new_red = new_red < 0 ? 0 : new_red;
             new_red = new_red > 255 ? 255 : new_red;
@@ -456,10 +479,6 @@ QImage NativeProcessor::modifyBrightness(float br)
 
 QImage NativeProcessor::modifyContrast(float c)
 {
-    if ( c > 255)
-        c = 255;
-    if (c < -255)
-        c = -255;
     int red;
     int green;
     int blue;
@@ -467,7 +486,8 @@ QImage NativeProcessor::modifyContrast(float c)
     int new_green;
     int new_blue;
 
-    float fcf = (259*(c + 255))/(255*(259 - c));
+    float A = (float)c / (float)m_contrast;
+    createLUT(false, A, m_histogram.size());
 
     QColor newcolor;
 
@@ -477,9 +497,9 @@ QImage NativeProcessor::modifyContrast(float c)
                 green = m_image.pixelColor(x, y).green();
                 blue = m_image.pixelColor(x, y).blue();
 
-                new_red = (fcf * (red - 128)) + 128;
-                new_green = (fcf * (green - 128)) + 128;
-                new_blue = (fcf * (blue - 128)) + 128;
+                new_red = m_lut[red];
+                new_green = m_lut[green];
+                new_blue = m_lut[blue];
 
                 new_red = new_red < 0 ? 0 : new_red;
                 new_red = new_red > 255 ? 255 : new_red;
@@ -493,7 +513,6 @@ QImage NativeProcessor::modifyContrast(float c)
                 newcolor.setRgb(new_red, new_green, new_blue);
 
                 m_rimage.setPixelColor(x, y, newcolor);
-
             }
         }
 

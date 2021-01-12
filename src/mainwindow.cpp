@@ -88,7 +88,7 @@ void MainWindow::on_actionOpen_File_triggered()
     fileDialog.setSidebarUrls(urls);
     fileDialog.setFileMode(QFileDialog::ExistingFile);
     fileDialog.setFilter(QDir::Files | QDir::Dirs | QDir::Drives | QDir::NoDotAndDotDot);
-    fileDialog.setNameFilter(QString("*.png *.jpg"));
+    fileDialog.setNameFilter(QString("*.png *.jpg *.tif"));
     fileDialog.setDirectoryUrl(urls.first());
     fileDialog.exec();
     files = fileDialog.selectedUrls();
