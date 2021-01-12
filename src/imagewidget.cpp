@@ -56,6 +56,7 @@ void imageWidget::toGrayscale(bool)
 {
     if (processor == nullptr) {
        processor = new NativeProcessor(this->image);
+
     }
     QImage grayImage = processor->getGrayScale();
     QString fileType = tr("test");
@@ -166,7 +167,7 @@ void imageWidget::specifyHistogram()
     fileDialog.setSidebarUrls(urls);
     fileDialog.setFileMode(QFileDialog::ExistingFile);
     fileDialog.setFilter(QDir::Files | QDir::Dirs | QDir::Drives | QDir::NoDotAndDotDot);
-    fileDialog.setNameFilter(QString("*.png *.jpg"));
+    fileDialog.setNameFilter(QString("*.png *.jpg *.tif"));
     fileDialog.setDirectoryUrl(urls.first());
     fileDialog.exec();
     file = fileDialog.selectedUrls();
@@ -230,7 +231,7 @@ void imageWidget::imageDifference()
     fileDialog.setSidebarUrls(urls);
     fileDialog.setFileMode(QFileDialog::ExistingFile);
     fileDialog.setFilter(QDir::Files | QDir::Dirs | QDir::Drives | QDir::NoDotAndDotDot);
-    fileDialog.setNameFilter(QString("*.png *.jpg"));
+    fileDialog.setNameFilter(QString("*.png *.jpg *.tif"));
     fileDialog.setDirectoryUrl(urls.first());
     fileDialog.exec();
     file = fileDialog.selectedUrls();

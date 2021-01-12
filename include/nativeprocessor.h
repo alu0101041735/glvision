@@ -57,6 +57,8 @@ private:
     int m_brightness;
     int m_contrast;
 
+    std::vector<int> m_lut;
+
     float m_entropy;
 
     void toGrayScale();
@@ -71,6 +73,7 @@ private:
     void computeBrightness();
     void computeContrast();
     std::vector<std::pair<int, int>> computeFullStretch(std::pair<int, int> start, std::pair<int, int> end, std::pair<int, int> range);
+    void createLUT(bool sum, float factor, int size);
 
 
 public:
