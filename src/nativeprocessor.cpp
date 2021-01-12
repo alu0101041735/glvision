@@ -487,7 +487,6 @@ QImage NativeProcessor::modifyContrast(float c)
     int new_blue;
 
     float A = (float)c / (float)m_contrast;
-    qDebug() << A;
     createLUT(false, A, m_histogram.size());
 
     QColor newcolor;
