@@ -40,6 +40,10 @@ public slots:
    void imgCrossSection();
    void digitalization();
    void imageDifference();
+   void mirror();
+   void rotate();
+   void rescale();
+   void transpose();
 
    void mousePressEvent(QMouseEvent* eventPress);
    void mouseReleaseEvent(QMouseEvent* eventRelease);
