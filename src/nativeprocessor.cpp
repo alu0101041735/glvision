@@ -695,5 +695,209 @@ void NativeProcessor::resetZone()
    m_end.first = m_width;
    m_end.second = m_height;
 
-    new(&m_rimage) QImage(m_width, m_height, QImage::Format_RGBA64);
+    m_rect = QRect(QPoint(m_start.first, m_start.second), QPoint(m_end.first, m_end.second));
+
+   new(&m_rimage) QImage(m_width, m_height, QImage::Format_RGBA64);
+}
+
+QImage NativeProcessor::vMirror()
+{
+    int yAux = m_end.second;
+
+    int red;
+    int green;
+    int blue;
+    QColor aux;
+
+    for (int y = m_start.second; y < m_end.second; y++) {
+        for (int x = m_start.first; x < m_end.first; x++) {
+            red = m_image.pixelColor(x,yAux).red();
+            green = m_image.pixelColor(x,yAux).green();
+            blue = m_image.pixelColor(x,yAux).blue();
+
+            aux.setRed(red);
+            aux.setGreen(green);
+            aux.setBlue(blue);
+
+            m_rimage.setPixelColor(x, y, aux);
+
+        }
+        yAux--;
+    }
+
+    return m_rimage.copy(m_rect);
+}
+
+QImage NativeProcessor::hMirror()
+{
+    int xAux;
+
+    int red;
+    int green;
+    int blue;
+    QColor aux;
+
+    for (int y = m_start.second; y < m_end.second; y++) {
+        xAux = m_end.second;
+        for (int x = m_start.first; x < m_end.first; x++) {
+            red = m_image.pixelColor(xAux,y).red();
+            green = m_image.pixelColor(xAux,y).green();
+            blue = m_image.pixelColor(xAux,y).blue();
+
+            aux.setRed(red);
+            aux.setGreen(green);
+            aux.setBlue(blue);
+
+            m_rimage.setPixelColor(x, y, aux);
+
+            xAux--;
+        }
+    }
+
+    return m_rimage.copy(m_rect);
+}
+
+QImage NativeProcessor::transposed()
+{
+    int red;
+    int green;
+    int blue;
+    QColor aux;
+
+    new(&m_rimage) QImage(m_height, m_width, QImage::Format_RGBA64);
+
+    for (int y = m_start.second; y < m_end.second; y++) {
+        for (int x = m_start.first; x < m_end.first; x++) {
+            red = m_image.pixelColor(x,y).red();
+            green = m_image.pixelColor(x,y).green();
+            blue = m_image.pixelColor(x,y).blue();
+
+            aux.setRed(red);
+            aux.setGreen(green);
+            aux.setBlue(blue);
+
+            m_rimage.setPixelColor(y, x, aux);
+        }
+    }
+
+    return m_rimage.copy(m_rect);
+}
+
+QImage NativeProcessor::rotate(int r)
+{
+    int red;
+    int green;
+    int blue;
+    QColor aux;
+
+    if (r == 90) {
+        new(&m_rimage) QImage(m_height, m_width, QImage::Format_RGBA64);
+
+        int yAux = m_end.first;
+
+        for (int y = m_start.second; y < m_end.second; y++) {
+            for (int x = m_start.first;  x < m_end.first; x++) {
+                red = m_image.pixelColor(yAux, x).red();
+                green = m_image.pixelColor(yAux, x).green();
+                blue = m_image.pixelColor(yAux, x).blue();
+
+                aux.setRed(red);
+                aux.setGreen(green);
+                aux.setBlue(blue);
+
+                m_rimage.setPixelColor(x, y, aux);
+
+            }
+            yAux--;
+        }
+    }
+    else if (r == 180) {
+
+        int yAux = m_end.first;
+        int xAux = m_end.second;
+
+        for (int y = m_start.second; y < m_end.second; y++) {
+            for (int x = m_start.first;  x < m_end.first; x++) {
+                red = m_image.pixelColor(xAux, yAux).red();
+                green = m_image.pixelColor(xAux, yAux).green();
+                blue = m_image.pixelColor(xAux, yAux).blue();
+
+
+                aux.setRed(red);
+                aux.setGreen(green);
+                aux.setBlue(blue);
+
+                m_rimage.setPixelColor(x, y, aux);
+
+                xAux--;
+            }
+            xAux = m_end.second;
+            yAux--;
+        }
+
+        qDebug() << "TODO";
+    }
+    else if (r == 270) {
+        new(&m_rimage) QImage(m_height, m_width, QImage::Format_RGBA64);
+
+        int xAux;
+
+        for (int y = m_start.second; y < m_end.second; y++) {
+            xAux = m_end.second;
+            for (int x = m_start.first;  x < m_end.first; x++) {
+                red = m_image.pixelColor(y, xAux).red();
+                green = m_image.pixelColor(y, xAux).green();
+                blue = m_image.pixelColor(y, xAux).blue();
+
+                aux.setRed(red);
+                aux.setGreen(green);
+                aux.setBlue(blue);
+
+                m_rimage.setPixelColor(x, y, aux);
+
+                xAux--;
+            }
+        }
+    }
+    else {
+        qDebug() << "TODO";
+    }
+
+    return m_rimage.copy(m_rect);
+
+}
+
+QImage NativeProcessor::scale(float xScale, float yScale)
+{
+    QImage auxImage = m_image.copy(m_rect);
+
+    int newHeight = (float)auxImage.height() * yScale;
+    int newWidth = (float)auxImage.width() * xScale;
+
+    new(&m_rimage) QImage(newWidth, newHeight,QImage::Format_RGBA64);
+    int red;
+    int green;
+    int blue;
+    QColor aux;
+
+    for (int y = 0; y < m_rimage.height(); y++) {
+        for (int x = 0; x < m_rimage.width(); x++) {
+
+            int pixelX = round(x / xScale);
+            int pixelY = round(y / yScale);
+
+            red = auxImage.pixelColor(pixelX, pixelY).red();
+            green = auxImage.pixelColor(pixelX, pixelY).green();
+            blue = auxImage.pixelColor(pixelX, pixelY).blue();
+
+            aux.setRed(red);
+            aux.setGreen(green);
+            aux.setBlue(blue);
+
+            m_rimage.setPixelColor(x, y, aux);
+        }
+
+    }
+    return m_rimage;
+
 }
