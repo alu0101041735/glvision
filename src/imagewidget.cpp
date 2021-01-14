@@ -109,7 +109,7 @@ void imageWidget::adjustBrightnes()
     bool* ok = new bool(false);
     float multiplier;
     multiplier = QInputDialog::getDouble(this, tr("Brightness"),
-                                         tr("Multiplier"), 1, 0, 1000,
+                                         tr("New brightness"), 50, 0, 255,
                                          2, ok, Qt::WindowFlags(), 0.01
                                          );
     if (*ok) {
@@ -126,9 +126,9 @@ void imageWidget::adjustContrast()
     }
     bool* ok = new bool(false);
     int newContrast;
-    newContrast = QInputDialog::getInt(this, tr("Contrast"),
-                                         tr("New contrast"), 0, -255, 255,
-                                         1, ok, Qt::WindowFlags()
+    newContrast = QInputDialog::getDouble(this, tr("Contrast"),
+                                         tr("New contrast"), 75, 0, 128,
+                                         2, ok, Qt::WindowFlags(), 0.01
                                          );
     if (*ok) {
         QImage image = processor->modifyContrast(newContrast);
