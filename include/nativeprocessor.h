@@ -120,6 +120,8 @@ public:
     QImage transposed();
     QImage rotate(int r);
 
+    QImage scale(float x, float y);
+
 
 };
 

@@ -112,6 +112,10 @@ void MainWindow::on_actionOpen_File_triggered()
         createTab(images.first(), info.completeSuffix(), files.first().fileName());
     }  catch (std::exception& e) {
     }
+
+    NativeProcessor np(images.first());
+    QImage result = np.scale(1, 1.5);
+    result.save("../glvision/images/result_scale.png");
 }
 
 void MainWindow::receieveImage(QImage &image, QString& format)

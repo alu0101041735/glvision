@@ -866,3 +866,38 @@ QImage NativeProcessor::rotate(int r)
     return m_rimage.copy(m_rect);
 
 }
+
+QImage NativeProcessor::scale(float xScale, float yScale)
+{
+    QImage auxImage = m_image.copy(m_rect);
+
+    int newHeight = (float)auxImage.height() * yScale;
+    int newWidth = (float)auxImage.width() * xScale;
+
+    new(&m_rimage) QImage(newWidth, newHeight,QImage::Format_RGBA64);
+    int red;
+    int green;
+    int blue;
+    QColor aux;
+
+    for (int y = 0; y < m_rimage.height(); y++) {
+        for (int x = 0; x < m_rimage.width(); x++) {
+
+            int pixelX = round(x / xScale);
+            int pixelY = round(y / yScale);
+
+            red = auxImage.pixelColor(pixelX, pixelY).red();
+            green = auxImage.pixelColor(pixelX, pixelY).green();
+            blue = auxImage.pixelColor(pixelX, pixelY).blue();
+
+            aux.setRed(red);
+            aux.setGreen(green);
+            aux.setBlue(blue);
+
+            m_rimage.setPixelColor(x, y, aux);
+        }
+
+    }
+    return m_rimage;
+
+}
