@@ -115,6 +115,12 @@ public:
     void setZone(std::pair<int, int> start, std::pair<int, int> end);
     void resetZone();
 
+    QImage vMirror();
+    QImage hMirror();
+    QImage transposed();
+    QImage rotate(int r);
+
+
 };
 
 #endif // NATIVEPROCESSOR_H

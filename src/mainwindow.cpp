@@ -55,6 +55,15 @@ void test_all(QImage image)
     std::vector<double> temp_histogram = np2.getNormalizedCumulativeHistogram();
 
     np.specifyHistogram(temp_histogram).save("../glvision/images/specification_test.png");
+
+    result = np.rotate(90);
+    result.save("../glvision/images/result_rotate90.png");
+
+    result = np.rotate(180);
+    result.save("../glvision/images/result_rotate180.png");
+
+    result = np.rotate(270);
+    result.save("../glvision/images/result_rotate270.png");
 }
 
 MainWindow::MainWindow(QWidget *parent)
@@ -103,7 +112,6 @@ void MainWindow::on_actionOpen_File_triggered()
         createTab(images.first(), info.completeSuffix(), files.first().fileName());
     }  catch (std::exception& e) {
     }
-
 }
 
 void MainWindow::receieveImage(QImage &image, QString& format)
