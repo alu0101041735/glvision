@@ -93,6 +93,8 @@ void MainWindow::on_actionOpen_File_triggered()
     fileDialog.exec();
     files = fileDialog.selectedUrls();
 
+    if (files.size() == 0)
+        return;
 
     for (auto fileUrl : files) {
         images.append(QImage(fileUrl.path()));
