@@ -121,8 +121,7 @@ public:
     QImage rotate(int r);
 
     QImage scale(float x, float y);
-
-
+    QImage bilinealScale(float x, float y);
 };
 
 #endif // NATIVEPROCESSOR_H
