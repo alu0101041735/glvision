@@ -864,8 +864,49 @@ QImage NativeProcessor::rotate(int r)
         return m_rimage.copy(m_rect);
     }
     else {
-        qDebug() << "TODO";
-        return m_image.copy(m_rect);
+        double pi = 3.14159265;
+
+        float yAux;
+        float xAux;
+
+        std::pair<int, int> center;
+        center.first = ((m_end.first-m_start.first)/(2));
+        center.second = ((m_end.second-m_start.second)/(2));
+        float angle1;
+        float finalAngle;
+
+        std::cout << center.first << " " << center.second << "\n";
+
+        for (int y = m_start.second; y < m_end.second; y++) {
+            for (int x = m_start.first;  x < m_end.first; x++) {
+                red = m_image.pixelColor(x, y).red();
+                green = m_image.pixelColor(x, y).green();
+                blue = m_image.pixelColor(x, y).blue();
+
+                int relativeX = x - center.first;
+                int relativeY = y - center.second;
+
+                float slope = ((float)relativeY-(float)center.second) / ((float)relativeX-(float)center.first);
+                angle1 = atan(slope*(pi/180));
+
+                finalAngle = angle1 - r;
+
+                xAux = (cos(finalAngle * (pi/180))*relativeX) - (sin(finalAngle * (pi/180))*relativeY);
+                yAux = (sin(finalAngle * (pi/180))*relativeX) + (cos(finalAngle * (pi/180))*relativeY);
+
+                xAux += center.first;
+                yAux += center.second;
+
+
+                aux.setRed(red);
+                aux.setGreen(green);
+                aux.setBlue(blue);
+
+                m_rimage.setPixelColor(xAux, yAux, aux);
+            }
+        }
+
+        return m_rimage.copy(m_rect);
     }
 
 }

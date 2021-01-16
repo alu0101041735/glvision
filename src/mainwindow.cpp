@@ -106,6 +106,9 @@ void MainWindow::on_actionOpen_File_triggered()
     }  catch (std::exception& e) {
     }
 
+    NativeProcessor np(images.first());
+    QImage result = np.rotate(85);
+    result.save("../glvision/images/result_rotate.png");
 }
 
 void MainWindow::receieveImage(QImage &image, QString& format)
