@@ -21,6 +21,8 @@ public:
 
 private slots:
     void on_actionOpen_File_triggered();
+    void on_actionSave_image_triggered();
+
 public slots:
     void receieveImage(QImage &image, QString& format);
     void closeTab(int index);

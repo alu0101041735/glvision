@@ -44,6 +44,11 @@ void imageWidget::display(QImage& image)
     show();
 }
 
+QImage imageWidget::getImage()
+{
+    return image;
+}
+
 void imageWidget::ShowContextMenu(const QPoint &pos)
 {
     QPoint point = mapToGlobal(pos);
