@@ -791,57 +791,56 @@ QImage NativeProcessor::rotate(int r)
     int green;
     int blue;
     QColor aux;
+    qDebug() << r;
 
     if (r == 90) {
-        new(&m_rimage) QImage(m_end.second, m_end.first, QImage::Format_RGBA64);
+        new(&m_rimage) QImage(m_end.second-m_start.second, m_end.first-m_start.first, QImage::Format_RGBA64);
 
         int yAux = m_end.first;
 
-        for (int y = m_start.second; y < m_end.second; y++) {
-            for (int x = m_start.first;  x < m_end.first; x++) {
-                red = m_image.pixelColor(yAux, x).red();
-                green = m_image.pixelColor(yAux, x).green();
-                blue = m_image.pixelColor(yAux, x).blue();
+        for (int y = 0; y < m_rimage.height(); y++) {
+            for (int x = 0;  x < m_rimage.width(); x++) {
+                red = m_image.pixelColor(x, y).red();
+                green = m_image.pixelColor(x, y).green();
+                blue = m_image.pixelColor(x, y).blue();
 
                 aux.setRed(red);
                 aux.setGreen(green);
                 aux.setBlue(blue);
 
-                m_rimage.setPixelColor(x, y, aux);
+                //datOut[i][j]= datIn[rows-j][i];
+                m_rimage.setPixelColor(m_end.second-y, x, aux);
 
             }
             yAux--;
         }
-        return m_rimage.copy(m_rect);
+        return m_rimage;
+        //return m_rimage.copy(m_rect);
     }
     else if (r == 180) {
 
-        int yAux = m_end.first;
-        int xAux = m_end.second;
+        qDebug() << m_end.first << "-" << m_start.first << "\n" << m_end.second << "-" << m_start.first;
+        new(&m_rimage) QImage(m_end.first-m_start.first, m_end.second-m_start.first, QImage::Format_RGBA64);
 
-        for (int y = m_start.second; y < m_end.second; y++) {
-            for (int x = m_start.first;  x < m_end.first; x++) {
-                red = m_image.pixelColor(xAux, yAux).red();
-                green = m_image.pixelColor(xAux, yAux).green();
-                blue = m_image.pixelColor(xAux, yAux).blue();
+        for (int y = 0; y < m_rimage.height(); y++) {
+            for (int x = 0;  x < m_rimage.width(); x++) {
+                red = m_image.pixelColor(x, y).red();
+                green = m_image.pixelColor(x, y).green();
+                blue = m_image.pixelColor(x, y).blue();
 
 
                 aux.setRed(red);
                 aux.setGreen(green);
                 aux.setBlue(blue);
 
-                m_rimage.setPixelColor(x, y, aux);
-
-                xAux--;
+                m_rimage.setPixelColor(m_rimage.width()-x,m_rimage.height()-y, aux);
             }
-            xAux = m_end.second;
-            yAux--;
         }
 
         return m_rimage.copy(m_rect);
     }
     else if (r == 270) {
-        new(&m_rimage) QImage(m_height, m_width, QImage::Format_RGBA64);
+        new(&m_rimage) QImage(m_end.second-m_start.first, m_end.first-m_start.first, QImage::Format_RGBA64);
 
         int xAux;
 
@@ -861,7 +860,7 @@ QImage NativeProcessor::rotate(int r)
                 xAux--;
             }
         }
-        return m_rimage.copy(m_rect);
+    return m_rimage;
     }
     else {
         double pi = 3.14159265;
@@ -906,9 +905,8 @@ QImage NativeProcessor::rotate(int r)
             }
         }
 
-        return m_rimage.copy(m_rect);
+    return m_rimage;
     }
-
 }
 
 QImage NativeProcessor::scale(float xScale, float yScale)
