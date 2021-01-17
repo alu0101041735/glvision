@@ -17,6 +17,7 @@ public:
     explicit imageWidget(QImage image, QWidget *parent = nullptr);
 
     void display(QImage& image);
+    QImage getImage(void);
 
 private:
     QGraphicsScene* scene;

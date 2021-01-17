@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 
+#include "imagewidget.h"
 #include "ui_mainwindow.h"
 #include <QFileDialog>
 #include <QStandardPaths>
@@ -126,3 +127,13 @@ void MainWindow::createTab(QImage &image, QString format, QString title)
 
 
 
+
+void MainWindow::on_actionSave_image_triggered()
+{
+    QUrl fileUrl = QFileDialog::getSaveFileUrl();
+    ushort currentTabIndex = ui->tabWidget->currentIndex();
+    QWidget* currentTab = ui->tabWidget->widget(currentTabIndex);
+    imageWidget* imWidget = currentTab->findChild<imageWidget *>("image");
+    imWidget->getImage().save(fileUrl.path());
+
+}
