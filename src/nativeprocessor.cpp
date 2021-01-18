@@ -223,8 +223,8 @@ float NativeProcessor::max(float a, float b, float c, float d)
 
 NativeProcessor::NativeProcessor(QImage image): m_image(image)
 {
-    m_width = image.width();
-    m_height = image.height();
+    m_width = m_image.width();
+    m_height = m_image.height();
 
     resetZone();
 
@@ -820,7 +820,6 @@ QImage NativeProcessor::basicRotation(int r)
                 aux.setGreen(green);
                 aux.setBlue(blue);
 
-                //datOut[i][j]= datIn[rows-j][i];
                 m_rimage.setPixelColor(m_end.second-y, x, aux);
 
             }
@@ -1026,7 +1025,6 @@ QImage NativeProcessor::rotateBilineal(int r)
 
     int inverseR = -r;
 
-    std::pair<float, float> originCoord;
     QColor auxColor;
     int addedBlack = 0;
 
@@ -1038,15 +1036,46 @@ QImage NativeProcessor::rotateBilineal(int r)
             coord.first = x + minW;;
             coord.second = y + minH;
 
-            originCoord.first = (cos(inverseR * (pi/180))*coord.first) - (sin(inverseR * (pi/180))*coord.second);
-            originCoord.second = (sin(inverseR * (pi/180))*coord.first) + (cos(inverseR * (pi/180))*coord.second);
+            float fpX = (cos(inverseR * (pi/180))*coord.first) - (sin(inverseR * (pi/180))*coord.second);
+            float fpY = (sin(inverseR * (pi/180))*coord.first) + (cos(inverseR * (pi/180))*coord.second);
 
-            if ((originCoord.first >= 0) && (originCoord.first < m_image.width())
-                    && (originCoord.second >= 0) && (originCoord.second < m_image.height())) {
+            int pX = fpX;
+            int pY = fpY;
 
-                auxColor = m_image.pixelColor(originCoord.first, originCoord.second);
+
+
+            if ((pX >= 0) && (pX < m_image.width())
+                    && (pY >= 0) && (pY < m_image.height())) {
+
+                float redA = m_image.pixelColor(pX,pY+1).red();
+                float greenA = m_image.pixelColor(pX,pY+1).green();
+                float blueA = m_image.pixelColor(pX,pY+1).blue();
+
+                float redB = m_image.pixelColor(pX+1,pY+1).red();
+                float greenB = m_image.pixelColor(pX+1,pY+1).green();
+                float blueB = m_image.pixelColor(pX+1,pY+1).blue();
+
+                float redC = m_image.pixelColor(pX,pY).red();
+                float greenC = m_image.pixelColor(pX,pY).green();
+                float blueC = m_image.pixelColor(pX,pY).blue();
+
+                float redD = m_image.pixelColor(pX+1,pY).red();
+                float greenD = m_image.pixelColor(pX+1,pY).green();
+                float blueD = m_image.pixelColor(pX+1,pY).blue();
+
+                float p = fpX - pX;
+                float q = fpY - pY;
+
+                float red = redC + (redD - redC)*p + (redA-redC)*q + (redB+redC-redA-redD)*p*q;
+                float green = greenC + (greenD - greenC)*p + (greenA-greenC)*q + (greenB+greenC-greenA-greenD)*p*q;
+                float blue = blueC + (blueD - blueC)*p + (blueA-blueC)*q + (blueB+blueC-blueA-blueD)*p*q;
+
+                auxColor.setRed(red);
+                auxColor.setGreen(green);
+                auxColor.setBlue(blue);
 
                 m_rimage.setPixelColor(x,y, auxColor);
+
             } else {
                 m_rimage.setPixelColor(x,y,QColor(0,0,0,0));
                 addedBlack++;
@@ -1101,38 +1130,41 @@ QImage NativeProcessor::bilinealScale(float xScale, float yScale)
     int newWidth = (float)auxImage.width() * xScale;
 
     new(&m_rimage) QImage(newWidth, newHeight,QImage::Format_RGBA64);
-    int red;
-    int green;
-    int blue;
     QColor aux;
 
     for (int y = 0; y < m_rimage.height(); y++) {
         for (int x = 0; x < m_rimage.width(); x++) {
 
-            float pX = x / xScale;
-            float pY = y / yScale;
+            int pX = (x / xScale);
+            int pY = (y / yScale);
 
-            int aX = pX;
-            int aY = pY + 1;
+            float fpX = x / xScale;
+            float fpY = y / yScale;
 
-            int bX = pX + 1;
-            int bY = pY + 1;
+            float redA = auxImage.pixelColor(pX,pY+1).red();
+            float greenA = auxImage.pixelColor(pX,pY+1).green();
+            float blueA = auxImage.pixelColor(pX,pY+1).blue();
 
-            int cX = pX;
-            int cY = pY;
+            float redB = auxImage.pixelColor(pX+1,pY+1).red();
+            float greenB = auxImage.pixelColor(pX+1,pY+1).green();
+            float blueB = auxImage.pixelColor(pX+1,pY+1).blue();
 
-            int dX = pX + 1;
-            int dY = pY;
 
-            float p = pX - cX;
-            float q = aY - pY;
+            float redC = auxImage.pixelColor(pX,pY).red();
+            float greenC = auxImage.pixelColor(pX,pY).green();
+            float blueC = auxImage.pixelColor(pX,pY).blue();
 
-            int pixelX = cX + (dX-cX)*p + (aX-cX)*q + (bX+cX-aX-dX)*p*q;
-            int pixelY = cY + (dY-cY)*p + (aY-cY)*q + (bY+cY-aY-dY)*p*q;
+            float redD = auxImage.pixelColor(pX+1,pY).red();
+            float greenD = auxImage.pixelColor(pX+1,pY).green();
+            float blueD = auxImage.pixelColor(pX+1,pY).blue();
 
-            red = auxImage.pixelColor(pixelX, pixelY).red();
-            green = auxImage.pixelColor(pixelX, pixelY).green();
-            blue = auxImage.pixelColor(pixelX, pixelY).blue();
+            float p = fpX - pX;
+            float q = fpY - pY;
+
+
+            float red = redC + (redD - redC)*p + (redA-redC)*q + (redB+redC-redA-redD)*p*q;
+            float green = greenC + (greenD - greenC)*p + (greenA-greenC)*q + (greenB+greenC-greenA-greenD)*p*q;
+            float blue = blueC + (blueD - blueC)*p + (blueA-blueC)*q + (blueB+blueC-blueA-blueD)*p*q;
 
             aux.setRed(red);
             aux.setGreen(green);

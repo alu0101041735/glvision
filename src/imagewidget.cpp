@@ -327,7 +327,7 @@ void imageWidget::rotateBilineal()
         image = processor->basicRotation(degrees);
     } else
     {
-        image = processor->rotateVMP(degrees);
+        image = processor->rotateBilineal(degrees);
     }
     QString format = tr("test");
     emit newImage(image, format);
