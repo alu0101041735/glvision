@@ -121,7 +121,8 @@ void MainWindow::closeTab(int index)
 void MainWindow::createTab(QImage &image, QString format, QString title)
 {
     imageTab* newTab = new imageTab(image, format, ui->tabWidget);
-    ui->tabWidget->addTab( newTab, title);
+    ushort currentTab = ui->tabWidget->currentIndex();
+    ui->tabWidget->insertTab( ++currentTab, newTab, title);
     newTab->connectImageReturn(this);
 }
 
