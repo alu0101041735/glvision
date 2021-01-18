@@ -14,18 +14,18 @@ private:
     pair range;
     unsigned brightness;
     unsigned contrast;
-    unsigned entropy;
+    float entropy;
 
 
 public:
     imageInfo();
-    imageInfo(QString type, pair dim, pair range, unsigned br, unsigned cont, unsigned ent);
+    imageInfo(QString type, pair dim, pair range, unsigned br, unsigned cont, float ent);
     inline QString getFormat() {return fileType;}
     inline pair getDimensions() { return dimensions;}
     inline pair getRange() { return range;}
     inline unsigned getBrightness() { return brightness;}
     inline unsigned getContrast() { return contrast;}
-    inline unsigned getEntropy() { return entropy;}
+    inline float getEntropy() { return entropy;}
 
 };
 

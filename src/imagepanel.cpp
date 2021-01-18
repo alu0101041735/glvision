@@ -20,7 +20,7 @@ void imagePanel::updateInfo(imageInfo &info)
                 QString::number(info.getContrast())
                 );
     this->ui->entropy->setText(
-                QString::number(info.getEntropy())
+                QString::number(info.getEntropy(), 10, 2)
                 );
     this->ui->lumRangeMin->setText(
                 QString::number(info.getRange().first)
