@@ -812,21 +812,20 @@ QImage NativeProcessor::basicRotation(int r)
 
         for (int y = 0; y < m_rimage.height(); y++) {
             for (int x = 0;  x < m_rimage.width(); x++) {
-                red = m_image.pixelColor(x, y).red();
-                green = m_image.pixelColor(x, y).green();
-                blue = m_image.pixelColor(x, y).blue();
+                red = m_image.pixelColor(yAux, x).red();
+                green = m_image.pixelColor(yAux, x).green();
+                blue = m_image.pixelColor(yAux, x).blue();
 
                 aux.setRed(red);
                 aux.setGreen(green);
                 aux.setBlue(blue);
 
-                m_rimage.setPixelColor(m_end.second-y, x, aux);
+                m_rimage.setPixelColor(x, y, aux);
 
             }
             yAux--;
         }
         return m_rimage;
-        //return m_rimage.copy(m_rect);
     }
     else if (r == 180) {
         new(&m_rimage) QImage(m_end.first-m_start.first, m_end.second-m_start.first, QImage::Format_RGBA64);
@@ -853,9 +852,9 @@ QImage NativeProcessor::basicRotation(int r)
 
         int xAux;
 
-        for (int y = m_start.second; y < m_end.second; y++) {
+        for (int y = 0; y < m_rimage.height(); y++) {
             xAux = m_end.second;
-            for (int x = m_start.first;  x < m_end.first; x++) {
+            for (int x = 0;  x < m_rimage.width(); x++) {
                 red = m_image.pixelColor(y, xAux).red();
                 green = m_image.pixelColor(y, xAux).green();
                 blue = m_image.pixelColor(y, xAux).blue();
