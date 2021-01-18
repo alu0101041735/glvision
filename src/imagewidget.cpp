@@ -280,7 +280,7 @@ void imageWidget::rotate()
 
     bool* ok = new bool(false);
     short degrees = QInputDialog::getInt(this, tr("Rotation"),
-                                         tr("Degrees"), 0, 0, 359,
+                                         tr("Degrees"), 0, -359, 359,
                                          2, ok, Qt::WindowFlags()
                                          );
     if (!*ok) return;
@@ -311,7 +311,7 @@ void imageWidget::rotateBilineal()
 
     bool* ok = new bool(false);
     short degrees = QInputDialog::getInt(this, tr("Rotation"),
-                                         tr("Degrees"), 0, 0, 359,
+                                         tr("Degrees"), 0, -359, 359,
                                          2, ok, Qt::WindowFlags()
                                          );
 
