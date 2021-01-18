@@ -30,6 +30,8 @@ public slots:
 private:
     Ui::MainWindow *ui;
     QMap<uint, imageTab*> tabs;
+    QMap<QString, ushort> tabnameCount;
+
     void createTab(QImage& image, QString format, QString title);
 };
 #endif // MAINWINDOW_H

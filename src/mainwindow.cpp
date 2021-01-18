@@ -110,7 +110,7 @@ void MainWindow::on_actionOpen_File_triggered()
 
 void MainWindow::receieveImage(QImage &image, QString& format)
 {
-    createTab(image, format, tr("prueba"));
+    createTab(image, format, tr(""));
 }
 
 void MainWindow::closeTab(int index)
@@ -122,7 +122,19 @@ void MainWindow::createTab(QImage &image, QString format, QString title)
 {
     imageTab* newTab = new imageTab(image, format, ui->tabWidget);
     ushort currentTab = ui->tabWidget->currentIndex();
-    ui->tabWidget->insertTab( ++currentTab, newTab, title);
+    QString newTitle;
+    if (title == "")
+    {
+        title = ui->tabWidget->tabText(currentTab);
+        title = title.split(' ').first();
+        tabnameCount[title] += 1;
+        newTitle = QString("%1 (%2)").arg(title).arg(tabnameCount[title]);
+
+    } else
+    {
+        newTitle = title;
+    }
+    ui->tabWidget->insertTab( ++currentTab, newTab, newTitle);
     newTab->connectImageReturn(this);
 }
 
