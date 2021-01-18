@@ -25,11 +25,6 @@ enum TransformationFlags
     TEST = 8
 };
 
-struct ImageWithoutCorners {
-    QImage image;
-    long int subNumber;
-};
-
 
 inline TransformationFlags operator|(TransformationFlags a, TransformationFlags b)
 {
@@ -66,9 +61,6 @@ private:
     std::vector<int> m_lut;
 
     float m_entropy;
-
-    ImageWithoutCorners m_imageWithoutCorners;
-
 
     void toGrayScale();
     void toGaussian();
@@ -132,8 +124,8 @@ public:
     QImage transposed();
     QImage basicRotation(int r);
     QImage rotateWrong(int r);
-    ImageWithoutCorners rotateVMP(int r);
-    ImageWithoutCorners rotateBilineal(int r);
+    QImage rotateVMP(int r);
+    QImage rotateBilineal(int r);
 
     QImage scale(float x, float y);
     QImage bilinealScale(float x, float y);

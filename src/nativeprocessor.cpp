@@ -41,9 +41,10 @@ void NativeProcessor::computeHistogram()
 
     for (int y = m_start.second; y < m_end.second; y++) {
         for (int x = m_start.first; x < m_end.first; x++) {
-            gray_level = m_grayimage.pixelColor(x, y).red();
+            gray_level = m_image.pixelColor(x, y).red();
 
-            m_histogram[gray_level] += 1;
+            if (qAlpha(m_image.pixel(x,y)) == 255)
+                m_histogram[gray_level] += 1;
         }
     }
 }
@@ -926,7 +927,7 @@ QImage NativeProcessor::rotateWrong(int r)
     return m_rimage;
 }
 
-ImageWithoutCorners NativeProcessor::rotateVMP(int r)
+QImage NativeProcessor::rotateVMP(int r)
 {
     double pi = 3.14159265;
 
@@ -981,18 +982,17 @@ ImageWithoutCorners NativeProcessor::rotateVMP(int r)
 
                 m_rimage.setPixelColor(x,y, auxColor);
             } else {
-                m_rimage.setPixelColor(x,y,QColor(0,0,0));
+                m_rimage.setPixelColor(x,y,QColor(0,0,0,0));
                 addedBlack++;
             }
         }
     }
-    m_imageWithoutCorners.image = m_rimage;
-    m_imageWithoutCorners.subNumber = addedBlack;
 
-    return m_imageWithoutCorners;
+    return m_rimage;
 }
 
-ImageWithoutCorners NativeProcessor::rotateBilineal(int r)
+
+QImage NativeProcessor::rotateBilineal(int r)
 {
     double pi = 3.14159265;
 
@@ -1047,15 +1047,13 @@ ImageWithoutCorners NativeProcessor::rotateBilineal(int r)
 
                 m_rimage.setPixelColor(x,y, auxColor);
             } else {
-                m_rimage.setPixelColor(x,y,QColor(0,0,0));
+                m_rimage.setPixelColor(x,y,QColor(0,0,0,0));
                 addedBlack++;
             }
         }
     }
-    m_imageWithoutCorners.image = m_rimage;
-    m_imageWithoutCorners.subNumber = addedBlack;
 
-    return m_imageWithoutCorners;
+    return m_rimage;
 }
 
 
@@ -1090,6 +1088,7 @@ QImage NativeProcessor::scale(float xScale, float yScale)
         }
 
     }
+
     return m_rimage;
 }
 
@@ -1136,5 +1135,6 @@ QImage NativeProcessor::bilinealScale(float xScale, float yScale)
         }
 
     }
+
     return m_rimage;
 }
