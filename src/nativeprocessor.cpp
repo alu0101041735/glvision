@@ -12,17 +12,18 @@ void  NativeProcessor::toGrayScale()
 
    for (int y = m_start.second; y < m_end.second; y++){
        for (int x = m_start.first; x < m_end.first; x++) {
-           red = m_image.pixelColor(x, y).red();
-           green = m_image.pixelColor(x, y).green();
-           blue = m_image.pixelColor(x, y).blue();
+          if (qAlpha(m_image.pixel(x,y)) != 0) {
+            red = m_image.pixelColor(x, y).red();
+            green = m_image.pixelColor(x, y).green();
+            blue = m_image.pixelColor(x, y).blue();
+            result_color = (red*0.222) + (green*0.707) + (blue*0.071);
 
-           result_color = (red*0.222) + (green*0.707) + (blue*0.071);
+            color.setRed(result_color);
+            color.setGreen(result_color);
+            color.setBlue(result_color);
 
-           color.setRed(result_color);
-           color.setGreen(result_color);
-           color.setBlue(result_color);
-
-           m_grayimage.setPixelColor(x, y, color);
+            m_grayimage.setPixelColor(x, y, color);
+          }
        }
    }
 
@@ -41,9 +42,9 @@ void NativeProcessor::computeHistogram()
 
     for (int y = m_start.second; y < m_end.second; y++) {
         for (int x = m_start.first; x < m_end.first; x++) {
-            gray_level = m_image.pixelColor(x, y).red();
+            gray_level = m_grayimage.pixelColor(x, y).red();
 
-            if (qAlpha(m_image.pixel(x,y)) == 255)
+            if (qAlpha(m_grayimage.pixel(x,y)) != 0)
                 m_histogram[gray_level] += 1;
         }
     }
@@ -1108,27 +1109,33 @@ QImage NativeProcessor::bilinealScale(float xScale, float yScale)
     for (int y = 0; y < m_rimage.height(); y++) {
         for (int x = 0; x < m_rimage.width(); x++) {
 
-            int pixelXA = y / yScale;
-            int pixelYA = y / yScale;
+            float pX = x / xScale;
+            float pY = y / yScale;
 
-            int pixelXB = round(x / xScale);
-            int pixelYB = y / yScale;
+            int aX = pX;
+            int aY = pY + 1;
 
-            int pixelXC = x / xScale;
-            int pixelYC = round(y / yScale);
+            int bX = pX + 1;
+            int bY = pY + 1;
 
-            int pixelXD = round(x / xScale);
-            int pixelYD = round(y / yScale);
+            int cX = pX;
+            int cY = pY;
 
-            int pixelX = (pixelXA + pixelXB + pixelXC + pixelXD)/4;
-            int pixelY = (pixelYA + pixelYB + pixelYC + pixelYD)/4;
+            int dX = pX + 1;
+            int dY = pY;
 
+            float p = pX - cX;
+            float q = aY - pY;
+
+            int pixelX = cX + (dX-cX)*p + (aX-cX)*q + (bX+cX-aX-dX)*p*q;
+            int pixelY = cY + (dY-cY)*p + (aY-cY)*q + (bY+cY-aY-dY)*p*q;
 
             red = auxImage.pixelColor(pixelX, pixelY).red();
             green = auxImage.pixelColor(pixelX, pixelY).green();
             blue = auxImage.pixelColor(pixelX, pixelY).blue();
 
-            aux.setRed(red); aux.setGreen(green);
+            aux.setRed(red);
+            aux.setGreen(green);
             aux.setBlue(blue);
 
             m_rimage.setPixelColor(x, y, aux);
