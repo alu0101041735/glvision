@@ -283,8 +283,52 @@ void imageWidget::rotate()
                                          tr("Degrees"), 0, 0, 359,
                                          2, ok, Qt::WindowFlags()
                                          );
+    if (!*ok) return;
 
-    QImage image = processor->rotate(degrees);
+    bool rotIsRight = (degrees == 90) |
+            (degrees == 180) |
+            (degrees == 270);
+
+    QImage image;
+    if (rotIsRight)
+    {
+        image = processor->basicRotation(degrees);
+    } else
+    {
+        image = processor->rotateVMP(degrees);
+    }
+
+    QString format = tr("test");
+    emit newImage(image, format);
+}
+
+void imageWidget::rotateBilineal()
+{
+    if  (processor == nullptr)
+    {
+      processor = new NativeProcessor(this->image);
+    }
+
+    bool* ok = new bool(false);
+    short degrees = QInputDialog::getInt(this, tr("Rotation"),
+                                         tr("Degrees"), 0, 0, 359,
+                                         2, ok, Qt::WindowFlags()
+                                         );
+
+    if (!*ok) return;
+
+    bool rotIsRight = (degrees == 90) |
+            (degrees == 180) |
+            (degrees == 270);
+
+    QImage image;
+    if (rotIsRight)
+    {
+        image = processor->basicRotation(degrees);
+    } else
+    {
+        image = processor->rotateBilineal(degrees);
+    }
     QString format = tr("test");
     emit newImage(image, format);
 }
@@ -304,6 +348,26 @@ void imageWidget::rescale()
     if (!*ok) return;
 
    QImage image = processor->scale(xScale, yScale);
+   QString format = tr("test");
+
+   emit newImage(image, format);
+}
+
+void imageWidget::rescaleBilineal()
+{
+    bool* ok = new bool(false);
+    float xScale = QInputDialog::getDouble(this, tr("X axis scaling factor"),
+                                         tr("Multiplier"), 1, 0, 1000,
+                                         2, ok, Qt::WindowFlags(), 0.01
+                                         );
+    if (!*ok) return;
+    float yScale = QInputDialog::getDouble(this, tr("Y axis scaling factor"),
+                                         tr("Multiplier"), 1, 0, 1000,
+                                         2, ok, Qt::WindowFlags(), 0.01
+                                         );
+    if (!*ok) return;
+
+   QImage image = processor->bilinealScale(xScale, yScale);
    QString format = tr("test");
 
    emit newImage(image, format);

@@ -43,7 +43,9 @@ public slots:
    void imageDifference();
    void mirror();
    void rotate();
+   void rotateBilineal();
    void rescale();
+   void rescaleBilineal();
    void transpose();
 
    void mousePressEvent(QMouseEvent* eventPress);
