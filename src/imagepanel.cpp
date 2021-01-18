@@ -31,9 +31,14 @@ void imagePanel::updateInfo(imageInfo &info)
 
 }
 
-void imagePanel::setHistrogram(QImage& image)
+void imagePanel::setHistrogram(QImage& image, bool cummulative)
 {
-    std::vector<uint32_t> histogram = NativeProcessor(image).getHistogram();
+    std::vector<uint32_t> histogram;
+    NativeProcessor processor = NativeProcessor(image);
+    if (!cummulative)
+        histogram = processor.getHistogram();
+    else
+        histogram = processor.getCumulativeHistogram();
     QBarSet* barSet = new QBarSet("histogram");
     for (auto value : histogram) {
         *barSet << value;
@@ -56,4 +61,9 @@ void imagePanel::updateMousePos(QPoint &pos, int value)
     ui->posX->setText(QString::number(pos.x()));
     ui->posY->setText(QString::number(pos.y()));
     ui->luminosity->setText(QString::number(value));
+}
+
+void imagePanel::on_toggleHistogram_clicked()
+{
+    emit toggleHistrogram();
 }
