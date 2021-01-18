@@ -871,6 +871,7 @@ QImage NativeProcessor::basicRotation(int r)
         return m_rimage;
     }
     else {
+        return m_image;
     }
 }
 
@@ -925,7 +926,7 @@ QImage NativeProcessor::rotateWrong(int r)
     return m_rimage;
 }
 
-QImage NativeProcessor::rotateVMP(int r)
+ImageWithoutCorners NativeProcessor::rotateVMP(int r)
 {
     double pi = 3.14159265;
 
@@ -960,7 +961,7 @@ QImage NativeProcessor::rotateVMP(int r)
 
     std::pair<float, float> originCoord;
     QColor auxColor;
-    int addedBlack = 0;
+    long int addedBlack = 0;
 
     for (int y = 0; y < m_rimage.height(); y++) {
         for (int x = 0; x < m_rimage.width(); x++) {
@@ -985,11 +986,13 @@ QImage NativeProcessor::rotateVMP(int r)
             }
         }
     }
+    m_imageWithoutCorners.image = m_rimage;
+    m_imageWithoutCorners.subNumber = addedBlack;
 
-    return m_rimage;
+    return m_imageWithoutCorners;
 }
 
-QImage NativeProcessor::rotateBilineal(int r)
+ImageWithoutCorners NativeProcessor::rotateBilineal(int r)
 {
     double pi = 3.14159265;
 
@@ -1049,8 +1052,10 @@ QImage NativeProcessor::rotateBilineal(int r)
             }
         }
     }
+    m_imageWithoutCorners.image = m_rimage;
+    m_imageWithoutCorners.subNumber = addedBlack;
 
-    return m_rimage;
+    return m_imageWithoutCorners;
 }
 
 
@@ -1103,29 +1108,29 @@ QImage NativeProcessor::bilinealScale(float xScale, float yScale)
 
     for (int y = 0; y < m_rimage.height(); y++) {
         for (int x = 0; x < m_rimage.width(); x++) {
-            int redA = auxImage.pixelColor(x-2, y).red();
-            int greenA = auxImage.pixelColor(x-2, y).green();
-            int blueA = auxImage.pixelColor(x-2, y).blue();
 
-            int redB = auxImage.pixelColor(x,y).red();
-            int greenB = auxImage.pixelColor(x,y).green();
-            int blueB = auxImage.pixelColor(x,y).blue();
+            int pixelXA = y / yScale;
+            int pixelYA = y / yScale;
 
-            int redC = auxImage.pixelColor(x-2,y-2).red();
-            int greenC = auxImage.pixelColor(x-2,y-2).green();
-            int blueC = auxImage.pixelColor(x-2,y-2).blue();
+            int pixelXB = round(x / xScale);
+            int pixelYB = y / yScale;
 
-            int redD = auxImage.pixelColor(x,y-2).red();
-            int greenD = auxImage.pixelColor(x,y-2).green();
-            int blueD = auxImage.pixelColor(x,y-2).blue();
+            int pixelXC = x / xScale;
+            int pixelYC = round(y / yScale);
 
-            int newRed = redC + (redD - redC)*1 + (redA - redC)*1 + (redB + redC - redA - redD);
-            int newGreen = greenC + (greenD - greenC)*1 + (greenA - greenC)*1 + (greenB + greenC - greenA - greenD);
-            int newBlue = blueC + (blueD - blueC)*1 + (blueA - blueC)*1 + (blueB + blueC - blueA - blueD);
+            int pixelXD = round(x / xScale);
+            int pixelYD = round(y / yScale);
 
-            aux.setRed(newRed);
-            aux.setGreen(newGreen);
-            aux.setBlue(newBlue);
+            int pixelX = (pixelXA + pixelXB + pixelXC + pixelXD)/4;
+            int pixelY = (pixelYA + pixelYB + pixelYC + pixelYD)/4;
+
+
+            red = auxImage.pixelColor(pixelX, pixelY).red();
+            green = auxImage.pixelColor(pixelX, pixelY).green();
+            blue = auxImage.pixelColor(pixelX, pixelY).blue();
+
+            aux.setRed(red); aux.setGreen(green);
+            aux.setBlue(blue);
 
             m_rimage.setPixelColor(x, y, aux);
         }
@@ -1133,5 +1138,3 @@ QImage NativeProcessor::bilinealScale(float xScale, float yScale)
     }
     return m_rimage;
 }
-
-
