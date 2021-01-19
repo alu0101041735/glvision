@@ -1,6 +1,14 @@
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
 
+
+#QT files
+*.user.pro
+*LOCAL*.pro
+*BACKUP*.pro
+*BASE*.pro
+*REMOTE*.pro
+
 *~
 *.autosave
 *.a

@@ -12,17 +12,18 @@ void  NativeProcessor::toGrayScale()
 
    for (int y = m_start.second; y < m_end.second; y++){
        for (int x = m_start.first; x < m_end.first; x++) {
-           red = m_image.pixelColor(x, y).red();
-           green = m_image.pixelColor(x, y).green();
-           blue = m_image.pixelColor(x, y).blue();
+          if (qAlpha(m_image.pixel(x,y)) != 0) {
+            red = m_image.pixelColor(x, y).red();
+            green = m_image.pixelColor(x, y).green();
+            blue = m_image.pixelColor(x, y).blue();
+            result_color = (red*0.222) + (green*0.707) + (blue*0.071);
 
-           result_color = (red*0.222) + (green*0.707) + (blue*0.071);
+            color.setRed(result_color);
+            color.setGreen(result_color);
+            color.setBlue(result_color);
 
-           color.setRed(result_color);
-           color.setGreen(result_color);
-           color.setBlue(result_color);
-
-           m_grayimage.setPixelColor(x, y, color);
+            m_grayimage.setPixelColor(x, y, color);
+          }
        }
    }
 
@@ -43,7 +44,8 @@ void NativeProcessor::computeHistogram()
         for (int x = m_start.first; x < m_end.first; x++) {
             gray_level = m_grayimage.pixelColor(x, y).red();
 
-            m_histogram[gray_level] += 1;
+            if (qAlpha(m_grayimage.pixel(x,y)) != 0)
+                m_histogram[gray_level] += 1;
         }
     }
 }
@@ -157,10 +159,8 @@ void NativeProcessor::computeContrast()
 
     for (unsigned long i = 0; i < m_histogram.size(); i++) {
 
-        for (unsigned long int j = 0; j < m_histogram[i]; j++) {
-            long double aux = abs(pow(i - m_brightness, 2));
-            sum += aux;
-        }
+        long double aux = m_histogram[i]*abs(pow(i - m_brightness, 2));
+        sum += aux;
     }
 
     m_contrast = sqrt(sum / (m_width*m_height));
@@ -189,10 +189,42 @@ std::vector<std::pair<int, int>> NativeProcessor::computeFullStretch(std::pair<i
     return result;
 }
 
+void NativeProcessor::createLUT(bool sum, float factor, int size)
+{
+    new (&m_lut) std::vector<int>(size);
+
+    if (sum) {
+        for (int i = 0; i < size; i++) {
+            m_lut[i] = (float)i + factor;
+        }
+    }
+    else {
+        for (int i = 0; i < size; i++) {
+            m_lut[i] = factor * ((float)i - 128) + 128;
+        }
+    }
+}
+
+float NativeProcessor::min(float a, float b, float c, float d)
+{
+   float aux1 = std::min(a,b);
+   float aux2 = std::min(c,d);
+
+   return std::min(aux1,aux2);
+}
+
+float NativeProcessor::max(float a, float b, float c, float d)
+{
+   float aux1 = std::max(a,b);
+   float aux2 = std::max(c,d);
+
+   return std::max(aux1,aux2);
+}
+
 NativeProcessor::NativeProcessor(QImage image): m_image(image)
 {
-    m_width = image.width();
-    m_height = image.height();
+    m_width = m_image.width();
+    m_height = m_image.height();
 
     resetZone();
 
@@ -426,15 +458,18 @@ QImage NativeProcessor::modifyBrightness(float br)
     int new_green;
     int new_blue;
 
+    float B = (float)br - (float)m_brightness;
+    createLUT(true, B, m_histogram.size());
+
     for (int y = m_start.second; y < m_end.second; y++) {
         for (int x = m_start.first; x < m_end.first; x++) {
             red = m_image.pixelColor(x, y).red();
             green = m_image.pixelColor(x, y).green();
             blue = m_image.pixelColor(x, y).blue();
 
-            new_red = red * br;
-            new_green = green * br;
-            new_blue = blue * br;
+            new_red = m_lut[red];
+            new_green = m_lut[green];
+            new_blue = m_lut[blue];
 
             new_red = new_red < 0 ? 0 : new_red;
             new_red = new_red > 255 ? 255 : new_red;
@@ -456,10 +491,6 @@ QImage NativeProcessor::modifyBrightness(float br)
 
 QImage NativeProcessor::modifyContrast(float c)
 {
-    if ( c > 255)
-        c = 255;
-    if (c < -255)
-        c = -255;
     int red;
     int green;
     int blue;
@@ -467,7 +498,8 @@ QImage NativeProcessor::modifyContrast(float c)
     int new_green;
     int new_blue;
 
-    float fcf = (259*(c + 255))/(255*(259 - c));
+    float A = (float)c / (float)m_contrast;
+    createLUT(false, A, m_histogram.size());
 
     QColor newcolor;
 
@@ -477,9 +509,9 @@ QImage NativeProcessor::modifyContrast(float c)
                 green = m_image.pixelColor(x, y).green();
                 blue = m_image.pixelColor(x, y).blue();
 
-                new_red = (fcf * (red - 128)) + 128;
-                new_green = (fcf * (green - 128)) + 128;
-                new_blue = (fcf * (blue - 128)) + 128;
+                new_red = m_lut[red];
+                new_green = m_lut[green];
+                new_blue = m_lut[blue];
 
                 new_red = new_red < 0 ? 0 : new_red;
                 new_red = new_red > 255 ? 255 : new_red;
@@ -493,7 +525,6 @@ QImage NativeProcessor::modifyContrast(float c)
                 newcolor.setRgb(new_red, new_green, new_blue);
 
                 m_rimage.setPixelColor(x, y, newcolor);
-
             }
         }
 
@@ -662,6 +693,8 @@ void NativeProcessor::setZone(std::pair<int, int> start, std::pair<int, int> end
 {
    m_start = start;
    m_end = end;
+   m_start.second -=1;
+   m_end.second -=1;
    new(&m_rimage) QImage(m_width, m_height, QImage::Format_RGBA64);
     m_rect = QRect(QPoint(m_start.first, m_start.second), QPoint(m_end.first, m_end.second));
 
@@ -673,8 +706,473 @@ void NativeProcessor::resetZone()
    m_start.first = 0;
    m_start.second = 0;
 
-   m_end.first = m_width;
-   m_end.second = m_height;
+   m_end.first = m_width-1;
+   m_end.second = m_height-1;
 
-    new(&m_rimage) QImage(m_width, m_height, QImage::Format_RGBA64);
+    m_rect = QRect(QPoint(m_start.first, m_start.second), QPoint(m_end.first, m_end.second));
+
+   new(&m_rimage) QImage(m_width, m_height, QImage::Format_RGBA64);
+}
+
+QImage NativeProcessor::vMirror()
+{
+    int yAux = m_end.second;
+
+    int red;
+    int green;
+    int blue;
+    QColor aux;
+
+    for (int y = m_start.second; y < m_end.second; y++) {
+        for (int x = m_start.first; x < m_end.first; x++) {
+            red = m_image.pixelColor(x,yAux).red();
+            green = m_image.pixelColor(x,yAux).green();
+            blue = m_image.pixelColor(x,yAux).blue();
+
+            aux.setRed(red);
+            aux.setGreen(green);
+            aux.setBlue(blue);
+
+            m_rimage.setPixelColor(x, y, aux);
+
+        }
+        yAux--;
+    }
+
+    return m_rimage.copy(m_rect);
+}
+
+QImage NativeProcessor::hMirror()
+{
+    int xAux;
+
+    int red;
+    int green;
+    int blue;
+    QColor aux;
+
+    for (int y = m_start.second; y < m_end.second; y++) {
+        xAux = m_end.second;
+        for (int x = m_start.first; x < m_end.first; x++) {
+            red = m_image.pixelColor(xAux,y).red();
+            green = m_image.pixelColor(xAux,y).green();
+            blue = m_image.pixelColor(xAux,y).blue();
+
+            aux.setRed(red);
+            aux.setGreen(green);
+            aux.setBlue(blue);
+
+            m_rimage.setPixelColor(x, y, aux);
+
+            xAux--;
+        }
+    }
+
+    return m_rimage.copy(m_rect);
+}
+
+QImage NativeProcessor::transposed()
+{
+    int red;
+    int green;
+    int blue;
+    QColor aux;
+
+    new(&m_rimage) QImage(m_height, m_width, QImage::Format_RGBA64);
+
+    for (int y = m_start.second; y < m_end.second; y++) {
+        for (int x = m_start.first; x < m_end.first; x++) {
+            red = m_image.pixelColor(x,y).red();
+            green = m_image.pixelColor(x,y).green();
+            blue = m_image.pixelColor(x,y).blue();
+
+            aux.setRed(red);
+            aux.setGreen(green);
+            aux.setBlue(blue);
+
+            m_rimage.setPixelColor(y, x, aux);
+        }
+    }
+
+    return m_rimage.copy(m_rect);
+}
+
+QImage NativeProcessor::basicRotation(int r)
+{
+    int red;
+    int green;
+    int blue;
+    QColor aux;
+    qDebug() << r;
+
+    if (r == 90) {
+        new(&m_rimage) QImage(m_end.second-m_start.second, m_end.first-m_start.first, QImage::Format_RGBA64);
+
+        int yAux = m_end.first;
+
+        for (int y = 0; y < m_rimage.height(); y++) {
+            for (int x = 0;  x < m_rimage.width(); x++) {
+                red = m_image.pixelColor(yAux, x).red();
+                green = m_image.pixelColor(yAux, x).green();
+                blue = m_image.pixelColor(yAux, x).blue();
+
+                aux.setRed(red);
+                aux.setGreen(green);
+                aux.setBlue(blue);
+
+                m_rimage.setPixelColor(x, y, aux);
+
+            }
+            yAux--;
+        }
+        return m_rimage;
+    }
+    else if (r == 180) {
+        new(&m_rimage) QImage(m_end.first-m_start.first, m_end.second-m_start.first, QImage::Format_RGBA64);
+
+        for (int y = 0; y < m_rimage.height(); y++) {
+            for (int x = 0;  x < m_rimage.width(); x++) {
+                red = m_image.pixelColor(x, y).red();
+                green = m_image.pixelColor(x, y).green();
+                blue = m_image.pixelColor(x, y).blue();
+
+
+                aux.setRed(red);
+                aux.setGreen(green);
+                aux.setBlue(blue);
+
+                m_rimage.setPixelColor(m_rimage.width()-x,m_rimage.height()-y, aux);
+            }
+        }
+
+        return m_rimage.copy(m_rect);
+    }
+    else if (r == 270) {
+        new(&m_rimage) QImage(m_end.second-m_start.first, m_end.first-m_start.first, QImage::Format_RGBA64);
+
+        int xAux;
+
+        for (int y = 0; y < m_rimage.height(); y++) {
+            xAux = m_end.second;
+            for (int x = 0;  x < m_rimage.width(); x++) {
+                red = m_image.pixelColor(y, xAux).red();
+                green = m_image.pixelColor(y, xAux).green();
+                blue = m_image.pixelColor(y, xAux).blue();
+
+                aux.setRed(red);
+                aux.setGreen(green);
+                aux.setBlue(blue);
+
+                m_rimage.setPixelColor(x, y, aux);
+
+                xAux--;
+            }
+        }
+        return m_rimage;
+    }
+    else {
+        return m_image;
+    }
+}
+
+QImage NativeProcessor::rotateWrong(int r)
+{
+    double pi = 3.14159265;
+
+    int red;
+    int green;
+    int blue;
+
+    QColor aux;
+
+    float yAux;
+    float xAux;
+
+    std::pair<int, int> center;
+    center.first = ((m_end.first-m_start.first)/(2));
+    center.second = ((m_end.second-m_start.second)/(2));
+    float angle1;
+    float finalAngle;
+
+    for (int y = m_start.second; y < m_end.second; y++) {
+        for (int x = m_start.first;  x < m_end.first; x++) {
+            red = m_image.pixelColor(x, y).red();
+            green = m_image.pixelColor(x, y).green();
+            blue = m_image.pixelColor(x, y).blue();
+
+            int relativeX = x - center.first;
+            int relativeY = y - center.second;
+
+            float slope = ((float)relativeY-(float)center.second) / ((float)relativeX-(float)center.first);
+            angle1 = atan(slope*(pi/180));
+
+            finalAngle = angle1 - r;
+
+            xAux = (cos(finalAngle * (pi/180))*relativeX) - (sin(finalAngle * (pi/180))*relativeY);
+            yAux = (sin(finalAngle * (pi/180))*relativeX) + (cos(finalAngle * (pi/180))*relativeY);
+
+            xAux += center.first;
+            yAux += center.second;
+
+
+            aux.setRed(red);
+            aux.setGreen(green);
+            aux.setBlue(blue);
+
+            m_rimage.setPixelColor(xAux, yAux, aux);
+        }
+    }
+
+    return m_rimage;
+}
+
+QImage NativeProcessor::rotateVMP(int r)
+{
+    double pi = 3.14159265;
+
+    std::pair<float,float> cornerA;
+    cornerA.first = (cos(r * (pi/180))*m_start.first) - (sin(r * (pi/180))*m_start.second);
+    cornerA.second = (sin(r * (pi/180))*m_start.first) + (cos(r * (pi/180))*m_start.second);
+
+    std::pair<float,float> cornerB;
+    cornerB.first = (cos(r * (pi/180))*m_end.first) - (sin(r * (pi/180))*m_start.second);
+    cornerB.second = (sin(r * (pi/180))*m_end.first) + (cos(r * (pi/180))*m_start.second);
+
+    std::pair<float,float> cornerC;
+    cornerC.first = (cos(r * (pi/180))*m_start.first) - (sin(r * (pi/180))*m_end.second);
+    cornerC.second = (sin(r * (pi/180))*m_start.first) + (cos(r * (pi/180))*m_end.second);
+
+    std::pair<float,float> cornerD;
+    cornerD.first = (cos(r * (pi/180))*m_end.first) - (sin(r * (pi/180))*m_end.second);
+    cornerD.second = (sin(r * (pi/180))*m_end.first) + (cos(r * (pi/180))*m_end.second);
+
+    float minW = min(cornerA.first, cornerB.first, cornerC.first, cornerD.first);
+    float maxW = max(cornerA.first, cornerB.first, cornerC.first, cornerD.first);
+
+    float minH = min(cornerA.second, cornerB.second, cornerC.second, cornerD.second);
+    float maxH = max(cornerA.second, cornerB.second, cornerC.second, cornerD.second);
+
+    int newHeight = maxH - minH;
+    int newWidth = maxW - minW;
+
+    new(&m_rimage) QImage(newWidth, newHeight,QImage::Format_RGBA64);
+
+    int inverseR = -r;
+
+    std::pair<float, float> originCoord;
+    QColor auxColor;
+    long int addedBlack = 0;
+
+    for (int y = 0; y < m_rimage.height(); y++) {
+        for (int x = 0; x < m_rimage.width(); x++) {
+
+            std::pair<float, float> coord;
+
+            coord.first = x + minW;;
+            coord.second = y + minH;
+
+            originCoord.first = (cos(inverseR * (pi/180))*coord.first) - (sin(inverseR * (pi/180))*coord.second);
+            originCoord.second = (sin(inverseR * (pi/180))*coord.first) + (cos(inverseR * (pi/180))*coord.second);
+
+            if ((originCoord.first >= 0) && (originCoord.first < m_image.width())
+                    && (originCoord.second >= 0) && (originCoord.second < m_image.height())) {
+
+                auxColor = m_image.pixelColor(originCoord.first, originCoord.second);
+
+                m_rimage.setPixelColor(x,y, auxColor);
+            } else {
+                m_rimage.setPixelColor(x,y,QColor(0,0,0,0));
+                addedBlack++;
+            }
+        }
+    }
+
+    return m_rimage;
+}
+
+
+QImage NativeProcessor::rotateBilineal(int r)
+{
+    double pi = 3.14159265;
+
+    std::pair<float,float> cornerA;
+    cornerA.first = (cos(r * (pi/180))*m_start.first) - (sin(r * (pi/180))*m_start.second);
+    cornerA.second = (sin(r * (pi/180))*m_start.first) + (cos(r * (pi/180))*m_start.second);
+
+    std::pair<float,float> cornerB;
+    cornerB.first = (cos(r * (pi/180))*m_end.first) - (sin(r * (pi/180))*m_start.second);
+    cornerB.second = (sin(r * (pi/180))*m_end.first) + (cos(r * (pi/180))*m_start.second);
+
+    std::pair<float,float> cornerC;
+    cornerC.first = (cos(r * (pi/180))*m_start.first) - (sin(r * (pi/180))*m_end.second);
+    cornerC.second = (sin(r * (pi/180))*m_start.first) + (cos(r * (pi/180))*m_end.second);
+
+    std::pair<float,float> cornerD;
+    cornerD.first = (cos(r * (pi/180))*m_end.first) - (sin(r * (pi/180))*m_end.second);
+    cornerD.second = (sin(r * (pi/180))*m_end.first) + (cos(r * (pi/180))*m_end.second);
+
+    float minW = min(cornerA.first, cornerB.first, cornerC.first, cornerD.first);
+    float maxW = max(cornerA.first, cornerB.first, cornerC.first, cornerD.first);
+
+    float minH = min(cornerA.second, cornerB.second, cornerC.second, cornerD.second);
+    float maxH = max(cornerA.second, cornerB.second, cornerC.second, cornerD.second);
+
+    int newHeight = maxH - minH;
+    int newWidth = maxW - minW;
+
+    new(&m_rimage) QImage(newWidth, newHeight,QImage::Format_RGBA64);
+
+    int inverseR = -r;
+
+    QColor auxColor;
+    int addedBlack = 0;
+
+    for (int y = 0; y < m_rimage.height(); y++) {
+        for (int x = 0; x < m_rimage.width(); x++) {
+
+            std::pair<float, float> coord;
+
+            coord.first = x + minW;;
+            coord.second = y + minH;
+
+            float fpX = (cos(inverseR * (pi/180))*coord.first) - (sin(inverseR * (pi/180))*coord.second);
+            float fpY = (sin(inverseR * (pi/180))*coord.first) + (cos(inverseR * (pi/180))*coord.second);
+
+            int pX = fpX;
+            int pY = fpY;
+
+
+
+            if ((pX >= 0) && (pX < m_image.width())
+                    && (pY >= 0) && (pY < m_image.height())) {
+
+                float redA = m_image.pixelColor(pX,pY+1).red();
+                float greenA = m_image.pixelColor(pX,pY+1).green();
+                float blueA = m_image.pixelColor(pX,pY+1).blue();
+
+                float redB = m_image.pixelColor(pX+1,pY+1).red();
+                float greenB = m_image.pixelColor(pX+1,pY+1).green();
+                float blueB = m_image.pixelColor(pX+1,pY+1).blue();
+
+                float redC = m_image.pixelColor(pX,pY).red();
+                float greenC = m_image.pixelColor(pX,pY).green();
+                float blueC = m_image.pixelColor(pX,pY).blue();
+
+                float redD = m_image.pixelColor(pX+1,pY).red();
+                float greenD = m_image.pixelColor(pX+1,pY).green();
+                float blueD = m_image.pixelColor(pX+1,pY).blue();
+
+                float p = fpX - pX;
+                float q = fpY - pY;
+
+                float red = redC + (redD - redC)*p + (redA-redC)*q + (redB+redC-redA-redD)*p*q;
+                float green = greenC + (greenD - greenC)*p + (greenA-greenC)*q + (greenB+greenC-greenA-greenD)*p*q;
+                float blue = blueC + (blueD - blueC)*p + (blueA-blueC)*q + (blueB+blueC-blueA-blueD)*p*q;
+
+                auxColor.setRed(red);
+                auxColor.setGreen(green);
+                auxColor.setBlue(blue);
+
+                m_rimage.setPixelColor(x,y, auxColor);
+
+            } else {
+                m_rimage.setPixelColor(x,y,QColor(0,0,0,0));
+                addedBlack++;
+            }
+        }
+    }
+
+    return m_rimage;
+}
+
+
+QImage NativeProcessor::scale(float xScale, float yScale)
+{
+    QImage auxImage = m_image.copy(m_rect);
+
+    int newHeight = (float)auxImage.height() * yScale;
+    int newWidth = (float)auxImage.width() * xScale;
+
+    new(&m_rimage) QImage(newWidth, newHeight,QImage::Format_RGBA64);
+    int red;
+    int green;
+    int blue;
+    QColor aux;
+
+    for (int y = 0; y < m_rimage.height(); y++) {
+        for (int x = 0; x < m_rimage.width(); x++) {
+
+            int pixelX = round(x / xScale);
+            int pixelY = round(y / yScale);
+
+            red = auxImage.pixelColor(pixelX, pixelY).red();
+            green = auxImage.pixelColor(pixelX, pixelY).green();
+            blue = auxImage.pixelColor(pixelX, pixelY).blue();
+
+            aux.setRed(red);
+            aux.setGreen(green);
+            aux.setBlue(blue);
+
+            m_rimage.setPixelColor(x, y, aux);
+        }
+
+    }
+
+    return m_rimage;
+}
+
+QImage NativeProcessor::bilinealScale(float xScale, float yScale)
+{
+    QImage auxImage = m_image.copy(m_rect);
+
+    int newHeight = (float)auxImage.height() * yScale;
+    int newWidth = (float)auxImage.width() * xScale;
+
+    new(&m_rimage) QImage(newWidth, newHeight,QImage::Format_RGBA64);
+    QColor aux;
+
+    for (int y = 0; y < m_rimage.height(); y++) {
+        for (int x = 0; x < m_rimage.width(); x++) {
+
+            int pX = (x / xScale);
+            int pY = (y / yScale);
+
+            float fpX = x / xScale;
+            float fpY = y / yScale;
+
+            float redA = auxImage.pixelColor(pX,pY+1).red();
+            float greenA = auxImage.pixelColor(pX,pY+1).green();
+            float blueA = auxImage.pixelColor(pX,pY+1).blue();
+
+            float redB = auxImage.pixelColor(pX+1,pY+1).red();
+            float greenB = auxImage.pixelColor(pX+1,pY+1).green();
+            float blueB = auxImage.pixelColor(pX+1,pY+1).blue();
+
+
+            float redC = auxImage.pixelColor(pX,pY).red();
+            float greenC = auxImage.pixelColor(pX,pY).green();
+            float blueC = auxImage.pixelColor(pX,pY).blue();
+
+            float redD = auxImage.pixelColor(pX+1,pY).red();
+            float greenD = auxImage.pixelColor(pX+1,pY).green();
+            float blueD = auxImage.pixelColor(pX+1,pY).blue();
+
+            float p = fpX - pX;
+            float q = fpY - pY;
+
+
+            float red = redC + (redD - redC)*p + (redA-redC)*q + (redB+redC-redA-redD)*p*q;
+            float green = greenC + (greenD - greenC)*p + (greenA-greenC)*q + (greenB+greenC-greenA-greenD)*p*q;
+            float blue = blueC + (blueD - blueC)*p + (blueA-blueC)*q + (blueB+blueC-blueA-blueD)*p*q;
+
+            aux.setRed(red);
+            aux.setGreen(green);
+            aux.setBlue(blue);
+
+            m_rimage.setPixelColor(x, y, aux);
+        }
+
+    }
+
+    return m_rimage;
 }

@@ -20,10 +20,14 @@ private:
 
 public:
     void updateInfo(imageInfo& info);
-    void setHistrogram(QImage& image);
+    void setHistrogram(QImage& image, bool cummulative = false);
 
+signals:
+     void toggleHistrogram();
 public slots:
     void updateMousePos(QPoint& pos, int value);
+private slots:
+    void on_toggleHistogram_clicked();
 };
 
 #endif // IMAGEPANEL_H

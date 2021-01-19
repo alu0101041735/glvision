@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <utility>
 #include <set>
+#include <algorithm>
 #include <math.h>
 #include <tgmath.h>
 #include <time.h>
@@ -57,6 +58,8 @@ private:
     int m_brightness;
     int m_contrast;
 
+    std::vector<int> m_lut;
+
     float m_entropy;
 
     void toGrayScale();
@@ -71,9 +74,13 @@ private:
     void computeBrightness();
     void computeContrast();
     std::vector<std::pair<int, int>> computeFullStretch(std::pair<int, int> start, std::pair<int, int> end, std::pair<int, int> range);
+    void createLUT(bool sum, float factor, int size);
+    float min(float a, float b, float c, float d);
+    float max(float a, float b, float c, float d);
 
 
 public:
+
     NativeProcessor(QImage image);
     NativeProcessor(QImage image, bool grayscale);
     QImage processImage( int transformation);
@@ -112,6 +119,16 @@ public:
     void setZone(std::pair<int, int> start, std::pair<int, int> end);
     void resetZone();
 
+    QImage vMirror();
+    QImage hMirror();
+    QImage transposed();
+    QImage basicRotation(int r);
+    QImage rotateWrong(int r);
+    QImage rotateVMP(int r);
+    QImage rotateBilineal(int r);
+
+    QImage scale(float x, float y);
+    QImage bilinealScale(float x, float y);
 };
 
 #endif // NATIVEPROCESSOR_H

@@ -44,6 +44,11 @@ void imageWidget::display(QImage& image)
     show();
 }
 
+QImage imageWidget::getImage()
+{
+    return image;
+}
+
 void imageWidget::ShowContextMenu(const QPoint &pos)
 {
     QPoint point = mapToGlobal(pos);
@@ -56,6 +61,7 @@ void imageWidget::toGrayscale(bool)
 {
     if (processor == nullptr) {
        processor = new NativeProcessor(this->image);
+
     }
     QImage grayImage = processor->getGrayScale();
     QString fileType = tr("test");
@@ -108,7 +114,7 @@ void imageWidget::adjustBrightnes()
     bool* ok = new bool(false);
     float multiplier;
     multiplier = QInputDialog::getDouble(this, tr("Brightness"),
-                                         tr("Multiplier"), 1, 0, 1000,
+                                         tr("New brightness"), 50, 0, 255,
                                          2, ok, Qt::WindowFlags(), 0.01
                                          );
     if (*ok) {
@@ -125,9 +131,9 @@ void imageWidget::adjustContrast()
     }
     bool* ok = new bool(false);
     int newContrast;
-    newContrast = QInputDialog::getInt(this, tr("Contrast"),
-                                         tr("New contrast"), 0, -255, 255,
-                                         1, ok, Qt::WindowFlags()
+    newContrast = QInputDialog::getDouble(this, tr("Contrast"),
+                                         tr("New contrast"), 75, 0, 128,
+                                         2, ok, Qt::WindowFlags(), 0.01
                                          );
     if (*ok) {
         QImage image = processor->modifyContrast(newContrast);
@@ -166,7 +172,7 @@ void imageWidget::specifyHistogram()
     fileDialog.setSidebarUrls(urls);
     fileDialog.setFileMode(QFileDialog::ExistingFile);
     fileDialog.setFilter(QDir::Files | QDir::Dirs | QDir::Drives | QDir::NoDotAndDotDot);
-    fileDialog.setNameFilter(QString("*.png *.jpg"));
+    fileDialog.setNameFilter(QString("*.png *.jpg *.tif"));
     fileDialog.setDirectoryUrl(urls.first());
     fileDialog.exec();
     file = fileDialog.selectedUrls();
@@ -230,7 +236,7 @@ void imageWidget::imageDifference()
     fileDialog.setSidebarUrls(urls);
     fileDialog.setFileMode(QFileDialog::ExistingFile);
     fileDialog.setFilter(QDir::Files | QDir::Dirs | QDir::Drives | QDir::NoDotAndDotDot);
-    fileDialog.setNameFilter(QString("*.png *.jpg"));
+    fileDialog.setNameFilter(QString("*.png *.jpg *.tif"));
     fileDialog.setDirectoryUrl(urls.first());
     fileDialog.exec();
     file = fileDialog.selectedUrls();
@@ -239,6 +245,140 @@ void imageWidget::imageDifference()
     image = processor->imageDifference(image);
     QString format = tr("test");
     emit newImage(image, format);
+}
+
+void imageWidget::mirror()
+{
+   if  (processor == nullptr)
+   {
+      processor = new NativeProcessor(this->image);
+   }
+
+   bool* ok = new bool(false);
+   QStringList items;
+   items << tr("vertical") << tr("Horizontal");
+   QString option = QInputDialog::getItem(this, tr("Mirror selection"), tr(""), items, 0, 0, ok, Qt::WindowFlags());
+
+   QImage image;
+   if (option == items[0])
+   {
+       image = processor->vMirror();
+   } else if (option == items[1])
+   {
+       image = processor->hMirror();
+   }
+   QString format = tr("test");
+   emit newImage(image, format);
+}
+
+void imageWidget::rotate()
+{
+    if  (processor == nullptr)
+    {
+      processor = new NativeProcessor(this->image);
+    }
+
+    bool* ok = new bool(false);
+    short degrees = QInputDialog::getInt(this, tr("Rotation"),
+                                         tr("Degrees"), 0, -359, 359,
+                                         2, ok, Qt::WindowFlags()
+                                         );
+    if (!*ok) return;
+
+    bool rotIsRight = (degrees == 90) |
+            (degrees == 180) |
+            (degrees == 270);
+
+    QImage image;
+    if (rotIsRight)
+    {
+        image = processor->basicRotation(degrees);
+    } else
+    {
+        image = processor->rotateVMP(degrees);
+    }
+
+    QString format = tr("test");
+    emit newImage(image, format);
+}
+
+void imageWidget::rotateBilineal()
+{
+    if  (processor == nullptr)
+    {
+      processor = new NativeProcessor(this->image);
+    }
+
+    bool* ok = new bool(false);
+    short degrees = QInputDialog::getInt(this, tr("Rotation"),
+                                         tr("Degrees"), 0, -359, 359,
+                                         2, ok, Qt::WindowFlags()
+                                         );
+
+    if (!*ok) return;
+
+    bool rotIsRight = (degrees == 90) |
+            (degrees == 180) |
+            (degrees == 270);
+
+    QImage image;
+    if (rotIsRight)
+    {
+        image = processor->basicRotation(degrees);
+    } else
+    {
+        image = processor->rotateBilineal(degrees);
+    }
+    QString format = tr("test");
+    emit newImage(image, format);
+}
+
+void imageWidget::rescale()
+{
+    bool* ok = new bool(false);
+    float xScale = QInputDialog::getDouble(this, tr("X axis scaling factor"),
+                                         tr("Multiplier"), 1, 0, 1000,
+                                         2, ok, Qt::WindowFlags(), 0.01
+                                         );
+    if (!*ok) return;
+    float yScale = QInputDialog::getDouble(this, tr("Y axis scaling factor"),
+                                         tr("Multiplier"), 1, 0, 1000,
+                                         2, ok, Qt::WindowFlags(), 0.01
+                                         );
+    if (!*ok) return;
+
+   QImage image = processor->scale(xScale, yScale);
+   QString format = tr("test");
+
+   emit newImage(image, format);
+}
+
+void imageWidget::rescaleBilineal()
+{
+    bool* ok = new bool(false);
+    float xScale = QInputDialog::getDouble(this, tr("X axis scaling factor"),
+                                         tr("Multiplier"), 1, 0, 1000,
+                                         2, ok, Qt::WindowFlags(), 0.01
+                                         );
+    if (!*ok) return;
+    float yScale = QInputDialog::getDouble(this, tr("Y axis scaling factor"),
+                                         tr("Multiplier"), 1, 0, 1000,
+                                         2, ok, Qt::WindowFlags(), 0.01
+                                         );
+    if (!*ok) return;
+
+   QImage image = processor->bilinealScale(xScale, yScale);
+   QString format = tr("test");
+
+   emit newImage(image, format);
+}
+
+void imageWidget::transpose()
+{
+   QImage image = processor->transposed();
+   QString format = tr("test");
+
+   emit newImage(image, format);
 }
 
 void imageWidget::mousePressEvent(QMouseEvent *eventPress)

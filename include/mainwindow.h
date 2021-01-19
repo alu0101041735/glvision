@@ -21,6 +21,8 @@ public:
 
 private slots:
     void on_actionOpen_File_triggered();
+    void on_actionSave_image_triggered();
+
 public slots:
     void receieveImage(QImage &image, QString& format);
     void closeTab(int index);
@@ -28,6 +30,8 @@ public slots:
 private:
     Ui::MainWindow *ui;
     QMap<uint, imageTab*> tabs;
+    QMap<QString, ushort> tabnameCount;
+
     void createTab(QImage& image, QString format, QString title);
 };
 #endif // MAINWINDOW_H

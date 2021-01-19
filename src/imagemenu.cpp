@@ -18,6 +18,12 @@ void imageMenu::buildMenu(imageWidget* parent)
     QAction* specifyHistogram = new QAction(tr("Specify histogram"), this->parent());
     QAction* gammaCorrection = new QAction(tr("Gamma correction"), this->parent());
     QAction* imageDifference = new QAction(tr("Image difference"), this->parent());
+    QAction* rotation = new QAction(tr("Rotate"), this->parent());
+    QAction* rotationBilineal = new QAction(tr("Rotate (Bilineal)"), this->parent());
+    QAction* mirroring = new QAction(tr("Mirror"), this->parent());
+    QAction* rescaling = new QAction(tr("Rescale"), this->parent());
+    QAction* rescalingBilineal = new QAction(tr("Rescale (Bilineal)"), this->parent());
+    QAction* transpositon = new QAction(tr("Transpose"), this->parent());
 
     //Connections
     connect(toGray, &QAction::triggered, parent, &imageWidget::toGrayscale);
@@ -28,6 +34,12 @@ void imageMenu::buildMenu(imageWidget* parent)
     connect(specifyHistogram, &QAction::triggered, parent, &imageWidget::specifyHistogram);
     connect(gammaCorrection, &QAction::triggered, parent, &imageWidget::gammaCorrection);
     connect(imageDifference, &QAction::triggered, parent, &imageWidget::imageDifference);
+    connect(rotation, &QAction::triggered, parent, &imageWidget::rotate);
+    connect(rotationBilineal, &QAction::triggered, parent, &imageWidget::rotateBilineal);
+    connect(mirroring, &QAction::triggered, parent, &imageWidget::mirror);
+    connect(rescaling, &QAction::triggered, parent, &imageWidget::rescale);
+    connect(rescalingBilineal, &QAction::triggered, parent, &imageWidget::rescaleBilineal);
+    connect(transpositon, &QAction::triggered, parent, &imageWidget::transpose);
 
 
     addAction(toGray);
@@ -38,6 +50,12 @@ void imageMenu::buildMenu(imageWidget* parent)
     addAction(specifyHistogram);
     addAction(gammaCorrection);
     addAction(imageDifference);
+    addAction(rotation);
+    addAction(rotationBilineal);
+    addAction(mirroring);
+    addAction(rescaling);
+    addAction(rescalingBilineal);
+    addAction(transpositon);
 
 
 }

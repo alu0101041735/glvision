@@ -17,6 +17,7 @@ public:
     explicit imageWidget(QImage image, QWidget *parent = nullptr);
 
     void display(QImage& image);
+    QImage getImage(void);
 
 private:
     QGraphicsScene* scene;
@@ -40,6 +41,12 @@ public slots:
    void imgCrossSection();
    void digitalization();
    void imageDifference();
+   void mirror();
+   void rotate();
+   void rotateBilineal();
+   void rescale();
+   void rescaleBilineal();
+   void transpose();
 
    void mousePressEvent(QMouseEvent* eventPress);
    void mouseReleaseEvent(QMouseEvent* eventRelease);

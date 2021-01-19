@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 
+#include "imagewidget.h"
 #include "ui_mainwindow.h"
 #include <QFileDialog>
 #include <QStandardPaths>
@@ -88,11 +89,13 @@ void MainWindow::on_actionOpen_File_triggered()
     fileDialog.setSidebarUrls(urls);
     fileDialog.setFileMode(QFileDialog::ExistingFile);
     fileDialog.setFilter(QDir::Files | QDir::Dirs | QDir::Drives | QDir::NoDotAndDotDot);
-    fileDialog.setNameFilter(QString("*.png *.jpg"));
+    fileDialog.setNameFilter(QString("*.png *.jpg *.tif"));
     fileDialog.setDirectoryUrl(urls.first());
     fileDialog.exec();
     files = fileDialog.selectedUrls();
 
+    if (files.size() == 0)
+        return;
 
     for (auto fileUrl : files) {
         images.append(QImage(fileUrl.path()));
@@ -103,12 +106,11 @@ void MainWindow::on_actionOpen_File_triggered()
         createTab(images.first(), info.completeSuffix(), files.first().fileName());
     }  catch (std::exception& e) {
     }
-
 }
 
 void MainWindow::receieveImage(QImage &image, QString& format)
 {
-    createTab(image, format, tr("prueba"));
+    createTab(image, format, tr(""));
 }
 
 void MainWindow::closeTab(int index)
@@ -119,9 +121,32 @@ void MainWindow::closeTab(int index)
 void MainWindow::createTab(QImage &image, QString format, QString title)
 {
     imageTab* newTab = new imageTab(image, format, ui->tabWidget);
-    ui->tabWidget->addTab( newTab, title);
+    ushort currentTab = ui->tabWidget->currentIndex();
+    QString newTitle;
+    if (title == "")
+    {
+        title = ui->tabWidget->tabText(currentTab);
+        title = title.split(' ').first();
+        tabnameCount[title] += 1;
+        newTitle = QString("%1 (%2)").arg(title).arg(tabnameCount[title]);
+
+    } else
+    {
+        newTitle = title;
+    }
+    ui->tabWidget->insertTab( ++currentTab, newTab, newTitle);
     newTab->connectImageReturn(this);
 }
 
 
 
+
+void MainWindow::on_actionSave_image_triggered()
+{
+    QUrl fileUrl = QFileDialog::getSaveFileUrl();
+    ushort currentTabIndex = ui->tabWidget->currentIndex();
+    QWidget* currentTab = ui->tabWidget->widget(currentTabIndex);
+    imageWidget* imWidget = currentTab->findChild<imageWidget *>("image");
+    imWidget->getImage().save(fileUrl.path());
+
+}
